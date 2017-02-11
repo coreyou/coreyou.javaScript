@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html ng-app="appName_scope">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Hello AngularJS</title>
+    <!-- Bootstrap core CSS -->
+    <link href="../lib/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <!-- Bootstrap theme -->
+    <link href="../lib/bootstrap/3.3.1/css/bootstrap-theme.min.css" rel="stylesheet">
+    <!-- angular -->
+    <script src="../lib/angular/angular.js"></script>
+    <script src="../lib/angular/angular-route.js"></script>
+    <script src="src/js/controller_scope.js"></script><!-- 綁angular-route.js -->
+</head>
+<body>
+<div class="well" ng-controller="HttpCtrl"><!-- 使用 as 別名，用別名去 alias.userData反而拿不到值 -->
+    <div class="panel panel-primary" ng-repeat="member in userData"><!-- ng-repeat: foreach array -->
+        <div class="panel-body" >
+            <h1>{{ member.Name }}</h1>
+        </div>
+        <div class="panel-footer" >
+            <h2>Live in {{ member.City }}, {{ member.Country }}</h2>
+        </div>
+    </div>
+</div>
+</body>
+</html>

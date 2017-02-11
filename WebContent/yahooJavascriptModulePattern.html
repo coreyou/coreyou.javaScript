@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<!-- 可以先看closure.html -->
+<html>
+<head lang="en">
+<meta charset="UTF-8">
+<title>Yahoo JavaScript Module Pattern</title>
+</head>
+<body>
+	<script language="JavaScript">
+        // Yahoo JavaScript Module Pattern
+        var person = function() {
+            // Private
+            var name = "John";
+            return {
+                // public
+                getName : function() {
+                    return name;
+                },
+                setName : function(newName) {
+                    name = newName;
+                }
+            };
+        }();
+
+        alert(person.name); // Undefined
+        alert(person.getName());    // John
+        person.setName("Mary");
+        alert(person.getName());    // Mary
+    </script>
+</body>
+</html>

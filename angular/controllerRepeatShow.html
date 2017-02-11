@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html ng-app="appName">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Controller</title>
+    <!-- Bootstrap core CSS -->
+    <link href="../lib/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <!-- Bootstrap theme -->
+    <link href="../lib/bootstrap/3.3.1/css/bootstrap-theme.min.css" rel="stylesheet">
+    <!-- angular -->
+    <script src="../lib/angular/angular.js"></script>
+    <script src="src/js/controller.js"></script><!-- 連結到directives.js -->
+    <script src="src/js/directives.js"></script>
+</head>
+<body>
+<div class="well" ng-controller="PersonCtrl as person"><!-- controllerName as controllerAlias -->
+    <label>Name:</label>
+    <input type="text" ng-model="person.members[0].name" placeholder="Enter a name"><!-- controller.model, using alias -->
+    <br />
+    <label>Age: </label>
+    <input type="text" ng-model="person.members[0].age" placeholder="Enter a number">
+    <hr />
+    <div class="input-group">
+        <span class="input-group-btn">
+            <button class="btn btn-default" type="button">Search</button>
+        </span>
+        <input type="text" ng-model="search" class="form-control" placeholder="Enter any character in the member objects">
+    </div><!-- /input-group -->
+    <hr />
+    <div class="panel panel-primary" ng-repeat="member in person.members | filter:search"><!-- ng-repeat: foreach array -->
+        <div class="panel-body">
+            <h1>
+                <span class="glyphicon glyphicon-ok-circle" aria-hidden="true" ng-hide="member.isDeprecatedMember"></span><!-- ng-hide: if true then hide -->
+                <span class="glyphicon glyphicon-remove-circle" aria-hidden="true" ng-show="member.isDeprecatedMember"></span><!-- ng-show: if true then show -->
+                {{ member.name }}
+                <span class="badge badge-important">
+                    <span ng-show="$first">[第一筆]</span><!-- ng-repeat為第一筆時，$first == true -->
+                    <span ng-show="$middle">[中間筆]</span><!-- ng-repeat為中間筆時，$middle == true -->
+                    <span ng-show="$last">[最後一筆]</span><!-- ng-repeat為最後一筆時，$last == true -->
+                    <span ng-show="$even">[雙數筆]</span><!-- ng-repeat為雙數筆時，$even == true -->
+                    <span ng-show="$odd">[單數筆]</span><!-- ng-repeat為單數筆時，$odd == true -->
+                </span>
+            </h1>
+        </div>
+        <div class="panel-footer">
+            <h2>{{ member.age }} year old</h2>
+            <h2>${{ member.deposit }}</h2>
+            <button ng-show="member.isAuthorized">is authorized</button><!-- ng-show: if true then show -->
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,8 @@
+<div class="alert" tabindex="-1" ng-class="[type ? 'alert-' + type : null]">
+  <button type="button" class="close" ng-if="dismissable" ng-click="$hide()">&times;</button>
+  <span class="glyphicon glyphicon-ok" ng-show="type == 'success'"></span>
+  <span class="glyphicon glyphicon-info-sign" ng-show="type == 'info'"></span>
+  <span class="glyphicon glyphicon-warning-sign"  ng-show="type == 'warning'"></span>
+  <span class="glyphicon glyphicon-remove" ng-show="type == 'danger'"></span>
+  &nbsp;<strong ng-bind="title"></strong>&nbsp;<span ng-bind-html="content"></span>
+</div>

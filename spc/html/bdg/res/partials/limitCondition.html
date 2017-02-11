@@ -1,0 +1,85 @@
+<div ng-controller="limitConCtrl">
+  <nav class="navbar navbar-toolbar" role="navigation">
+    <div class="container-fluid">
+      <div class="btn-toolbar" role="toolbar">
+        <div class="btn-group">
+          <button class="btn btn-default" ng-click="limitTarget.limitInit()">重設限制條件</button>
+          <!--<button class="btn btn-default disabled" ng-class="{'disabled': src.list.length === 0}" ng-click="relation.show($event, 'relTable')">關聯表</button>-->
+        </div>
+        <div class="btn-group" ng-controller="makeColCtrl">
+          <button class="btn btn-default " ng-class="{'disabled': limitTarget.list.length === 0}"
+                  ng-click="advQueryPane.show($event)">進階查詢
+          </button>
+          <!--<button class="btn btn-default disabled" ng-class="{'disabled': src.list.length === 0}" ng-click="makeStrCol.show()">自定義欄位(字串型)</button>-->
+        </div>
+        <button class="btn btn-default btn btn-lg btn-success" ng-class="{'disabled': target.list.length === 0}"
+                ng-click="chartPrev.show()">圖型預覽
+        </button>
+        <div kendo-window="win2"
+             k-visible="false" k-on-resize="onResize()"
+             k-on-open="win2visible = true" k-on-close="win2visible = false">
+          <div style="text-align:center">
+            <h4 style="color:#4d90fe">{{chartPrev.ukText}}</h4>
+          </div>
+          <div id="c3Chart"></div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="panel panel-info">
+        <div class="panel-heading">
+          <h3 class="panel-title">欄位選擇清單：請點選設定限制條件欄位</h3>
+        </div>
+        <div class="panel-body">
+          <div id="bdg-limitSrc-grid" ui-grid="limitSrc.gridOpts" class="grid" ui-grid-selection ui-grid-edit
+               ui-grid-resize-columns
+               ui-grid-auto-resize>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="panel panel-info">
+        <div class="panel-heading">
+          <h3 class="panel-title">選定軸線清單</h3>
+        </div>
+        <div class="panel-body">
+
+          <div id="bdg-limitTarget-grid" ui-grid="limitTarget.gridOpts" external-scopes="limitTarget" class="grid"
+               ui-grid-resize-columns ui-grid-edit ui-grid-cellNav ui-grid-auto-resize></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/ng-template" id="assistModal">
+    <div class="modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" ng-click="$hide()">&times;</button>
+            <h4 class="modal-title">輔助輸入類別清單</h4>
+          </div>
+          <div class="modal-body">
+            <div ui-grid="assist.gridOpts" class="grid" ui-grid-selection ui-grid-resize-columns
+                 ui-grid-auto-resize></div>
+          </div>
+          <div class="modal-footer">
+            <div class="col-lg-10 col-lg-offset-2">
+              <button type="button" class="btn btn-danger btn-sm"
+                      ng-click="assist.cancel()">取消輸入
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </script>
+
+
+</div>

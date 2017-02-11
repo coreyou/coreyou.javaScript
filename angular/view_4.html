@@ -1,0 +1,13 @@
+<div class="alert alert-info" ng-repeat="person in friends">
+    <button type="button" class="close" ng-click="remove($index);">&times;</button>
+    連結：<a ng-href="#/edit/{{ $index }}">{{ person.name }}</a> : {{ person.reward | number }}
+    <div ng-hide="person.isEditing" ng-dblclick="person.isEditing=true;"><!-- ng-dblclick 雙擊事件 -->
+        標誌：{{ person.name }} <span class="badge badge-important">{{ person.reward }} 歲</span>
+    </div>
+    <!-- 雙擊事件會顯示以下輸入欄位 -->
+    <div ng-show="person.isEditing">
+        <input type="text" class="input-small" ng-model="person.name">
+        <input type="text" class="input-small" ng-model="person.reward">
+        <button class="btn btn-default" ng-click="person.isEditing=false;">Update</button>
+    </div>
+</div>

@@ -1,0 +1,23 @@
+<!--\r|\n|\t|\s\s-->
+<div id="bdd-filter-dialog" title="設定過濾條件" style="display:none;">
+  <table id="bdd-filter-col-grid"></table>
+  <label>運算子：</label>
+  <button class="btn btn-default bdd-operator" onclick="_bdd.filterAct(\'op\', \'>\')">&gt;</button>
+  <button class="btn btn-default bdd-operator" onclick="_bdd.filterAct(\'op\', \'<\')">&lt;</button>
+  <button class="btn btn-default bdd-operator" onclick="_bdd.filterAct(\'op\', \'>=\')">&gt;=</button>
+  <button class="btn btn-default bdd-operator" onclick="_bdd.filterAct(\'op\', \'<=\')">&lt;=</button>
+  <button class="btn btn-default bdd-operator" onclick="_bdd.filterAct(\'op\', \'=\')">= </button>
+  <button class="btn btn-default bdd-operator" onclick="_bdd.filterAct(\'op\', \'!=\')">!=</button>
+  <button class="btn btn-default bdd-operator" onclick="_bdd.filterAct(\'op\', \'like\')">like</button>
+  <button class="btn btn-default bdd-operator" onclick="_bdd.filterAct(\'op\', \'in\')">in</button>
+  <label>特殊：</label>
+  <button class="btn btn-default" onclick="_bdd.filterAct(\'op\', \'IS NOT NULL\')">IS NOT NULL</button>
+  <label class="bdd-waring-msg" id="bdd-filter-msg"></label></br>
+  <label>輸入器：</label>
+  <textarea id="bdd-filter-input" rows="1" placeholder="請輸入運算元內容，in的右運算元內容請以\',\'隔開"></textarea>
+  <button class="btn btn-default" onclick="_bdd.filterAct(\'input\')">填入運算元</button></br>
+  <textarea id="bdd-filter-rule" placeholder="單一規則說明：單一規則之各條件以AND串聯，完成後，按確定可置入規則清單。" rows="4"></textarea>
+  <button class="btn btn-default" onclick="_bdd.filterAct(\'resetRule\')">清除</button>
+  <button class="btn btn-default" onclick="_bdd.filterAct(\'addRule\')">確定</button>
+  <table id="bdd-filter-rule-grid"></table>
+</div>

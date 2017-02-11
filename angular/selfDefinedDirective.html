@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html ng-app="appName">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Tab using ng-init, ng-click</title>
+    <!-- Bootstrap core CSS -->
+    <link href="../lib/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <!-- Bootstrap theme -->
+    <link href="../lib/bootstrap/3.3.1/css/bootstrap-theme.min.css" rel="stylesheet">
+    <!-- angular -->
+    <script src="../lib/angular/angular.js"></script>
+    <script src="src/js/controller.js"></script><!-- 連結到directives.js -->
+    <script src="src/js/directives.js"></script>
+</head>
+<body class="list-group">
+<div class="list-group-item">
+    <!-- 自定的element，定義在controller.js裡面 -->
+    <member-tabs></member-tabs><!-- 內容和tabInitClick.html一樣 -->
+</div>
+</body>
+</html>

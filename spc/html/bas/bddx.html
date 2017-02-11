@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>BDD使用端-資料元件測試</title>
+  <script src="../bdd/client/lib/jquery/jquery-1.9.1.min.js"></script>
+  <script>
+    $(function () {
+      var bddClientWin,
+          $bddBtn = $('#bdd-test');
+      $bddBtn.on('click', function (e) {
+        var $target = $(e.target),
+            $window = $(window),
+            winWidth = $window.width(),
+            winHeight = $window.height(),
+            width = winWidth * 0.8,
+            height = winHeight * 0.8,
+            left = winWidth * 0.2 / 2,
+            top = winHeight * 0.2 / 2;
+        window.name = 'BDDCLIENT';
+        if (bddClientWin && !bddClientWin.closed) {
+          bddClientWin.focus();
+        } else {
+          bddClientWin = window.open('/erp/html/bdd/client/bddClient.html?bdd-com-id=' + $target.data('bdd-com-id') + '&host-id=' + $target.attr('id'), '_blank', 'titlebar=no,toolbar=no,location=no,directories=no,status=no,menubar=no,copyhistory=no,resizable=yes,width=' + width + ',height=' + height + ',left=' + left + ',top=' + top);
+        }
+      });
+      // 資料報表點擊事件監聽
+      $bddBtn.on('bddReportOnRow', function (e, row) {
+        // row代表該筆列資料物件，後續即為AP處理邏輯
+        if (console) console.log(row);
+      });
+      // 鍵值查詢點擊事件監聽
+      $bddBtn.on('bddUniqueOnRow', function (e, row) {
+        // row代表該筆列資料物件，後續即為AP處理邏輯
+        if (console) console.log(row);
+      });
+    });
+  </script>
+</head>
+<body>
+  <!--1413940947779-->
+  <button id="bdd-test" class="btn btn-default bdd-com-id" title="進階查詢" data-bdd-com-id="1413274642905">進階查詢</button>
+</body>
+</html>

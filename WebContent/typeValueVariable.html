@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+<meta charset="UTF-8">
+<title></title>
+</head>
+<body>
+	<script language="JavaScript">
+        var integerFaceValue = 0xff;
+        var floatFaceValue = 5.02e23;
+    </script>
+	<p>
+		整數字面值16進位(0xff):
+		<script language="JavaScript">document.write(integerFaceValue);</script>
+	</p>
+	<hr />
+	<p>
+		浮點數字面值(5.02*10的23次方):
+		<script language="JavaScript">document.write(floatFaceValue);</script>
+	</p>
+	<hr />
+	<p>數值運算的結果大於最大可表示數字，以Infinity表示；負數小於最小可表示負數值，以-Infinity表示:</p>
+	<table>
+		<tr>
+			<td>Infinity</td>
+			<td>可讀寫變數，初值為Infinity</td>
+		</tr>
+		<tr>
+			<td>Number.POSITIVE_INFINITY</td>
+			<td>唯讀變數</td>
+		</tr>
+		<tr>
+			<td>1 / 0 與 Number.MAX_VALUE + 1</td>
+			<td><script language="JavaScript">document.write((1 / 0) + " & " + (Number.MAX_VALUE+1));</script></td>
+		</tr>
+	</table>
+	<table>
+		<tr>
+			<td>-Infinity</td>
+			<td>可讀寫變數，初值為-Infinity</td>
+		</tr>
+		<tr>
+			<td>Number.NEGATIVE_INFINITY</td>
+			<td>唯讀變數</td>
+		</tr>
+		<tr>
+			<td>-1 / 0 與 -Number.MAX_VALUE + 1</td>
+			<td><script language="JavaScript">document.write((-1 / 0) + " & " + (-Number.MAX_VALUE+1));</script></td>
+		</tr>
+		<tr></tr>
+		<tr>
+			<td>-Infinity</td>
+			<td>可讀寫變數，初值為-Infinity</td>
+		</tr>
+		<tr>
+			<td>Number.NEGATIVE_INFINITY</td>
+			<td>唯讀變數</td>
+		</tr>
+		<tr>
+			<td>-1 / 0 與 -Number.MAX_VALUE + 1</td>
+			<td><script language="JavaScript">document.write((-1 / 0) + " & " + (-Number.MAX_VALUE+1));</script></td>
+		</tr>
+		<tr></tr>
+		<tr>
+			<td>NaN</td>
+			<td>可讀寫變數，初值為NaN</td>
+		</tr>
+		<tr>
+			<td>Number.NaN</td>
+			<td>唯讀變數</td>
+		</tr>
+		<tr>
+			<td>0 / 0</td>
+			<td><script language="JavaScript">document.write((0 / 0));</script></td>
+		</tr>
+		<tr>
+			<td>Number.MIN_VALUE / 2</td>
+			<td>underflow，結果為: <script language="JavaScript">document.write((Number.MIN_VALUE / 2));</script></td>
+		</tr>
+		<tr>
+			<td>-Number.MIN_VALUE / 2</td>
+			<td><script language="JavaScript">document.write((-Number.MIN_VALUE / 2));</script></td>
+		</tr>
+		<tr>
+			<td>-1 / Infinity</td>
+			<td><script language="JavaScript">document.write((-1 / Infinity));</script></td>
+		</tr>
+	</table>
+	<hr />
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html ng-app="appName">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Format Filter</title>
+    <!-- Bootstrap core CSS -->
+    <link href="../lib/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <!-- Bootstrap theme -->
+    <link href="../lib/bootstrap/3.3.1/css/bootstrap-theme.min.css" rel="stylesheet">
+    <!-- angular -->
+    <script src="../lib/angular/angular.js"></script>
+    <script src="src/js/controller.js"></script><!-- 連結到directives.js -->
+    <script src="src/js/directives.js"></script>
+</head>
+<body>
+<div class="well">
+<h1>data | filter:options</h1>
+    <p>{{ '106123046' | currency }}</p><!-- currency format -->
+    <p>{{ '1388123412323' | date:'MM/dd/yyyy @ h:mma' }}</p><!-- date format -->
+    <p>{{ 'octagon gem' | uppercase }}</p><!-- to uppercase -->
+    <p>{{ 'My Description' | limitTo:8 }}</p><!-- limit char number -->
+    <hr />
+    <div ng-controller="PersonCtrl as person">
+        <div ng-repeat="member in person.members | orderBy: '-age'"><!-- order by age backward(-) -->
+            <div ng-hide="member.isDeprecatedMember">
+                <h1>{{ member.name }}</h1>
+                <h2>{{ member.age }}</h2>
+                <h2>{{ member.deposit | currency }}</h2>
+                <img ng-src="{{ member.images[0] }}" /><!-- ng-src -->
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

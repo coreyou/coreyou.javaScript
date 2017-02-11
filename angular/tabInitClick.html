@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html ng-app="appName">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Tab using ng-init, ng-click</title>
+    <!-- Bootstrap core CSS -->
+    <link href="../lib/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <!-- Bootstrap theme -->
+    <link href="../lib/bootstrap/3.3.1/css/bootstrap-theme.min.css" rel="stylesheet">
+    <!-- angular -->
+    <script src="../lib/angular/angular.js"></script>
+    <script src="src/js/controller.js"></script>
+    <script src="src/js/directives.js"></script>
+</head>
+<body class="list-group">
+    <div class="list-group-item">
+        <section class="tab" ng-controller="TabController as tabCtrl" ng-init="tabCtrl.tab = 4"><!-- ng-init: init value of variable -->
+            <!-- three tabs -->
+            <ul class="nav nav-tabs">
+                <li ng-class="{ active: tabCtrl.isSet(1) }"><!-- ng-class: set CSS class, active is the setting of bootstrap .nav-pills -->
+                    <a href ng-click="tabCtrl.setTab(1)">Panel</a><!-- ng-click: mouse click event -->
+                </li>
+                <li ng-class="{ active: tabCtrl.isSet(2) }">
+                    <a href ng-click="tabCtrl.setTab(2)">Thumbnail</a>
+                </li>
+                <li ng-class="{ active: tabCtrl.isSet(3) }">
+                    <a href ng-click="tabCtrl.setTab(3)">Include HTML File</a>
+                </li>
+                <li ng-class="{ active: tabCtrl.isSet(4) }">
+                    <a href ng-click="tabCtrl.setTab(4)">Include By Element</a>
+                </li>
+                <li ng-class="{ active: tabCtrl.isSet(5) }">
+                    <a href ng-click="tabCtrl.setTab(5)">Include By Attribute</a>
+                </li>
+            </ul>
+            <!-- end of three tabs -->
+            <!-- content of tab 1 -->
+            <div ng-show="tabCtrl.isSet(1)"><!-- ng-show -->
+                <div class="well container-fluid" ng-controller="PersonCtrl as person"><!-- controllerName as controllerAlias -->
+                    <div class="panel panel-primary" ng-repeat="member in person.members"><!-- ng-repeat: foreach array -->
+                        <div class="panel-body" ng-hide="member.isDeprecatedMember"><!-- ng-hide: if true then hide -->
+                            <h1>{{ member.name }}</h1>
+                        </div>
+                        <div class="panel-footer" ng-hide="member.isDeprecatedMember">
+                            <h2>{{ member.age }} year old</h2>
+                            <h2>${{ member.deposit }}</h2>
+                            <button ng-show="member.isAuthorized">is authorized</button><!-- ng-show: if true then show -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- end of content of tab 1 -->
+            <!-- content of tab 2 -->
+            <div ng-show="tabCtrl.isSet(2)">
+                <div class="well container-fluid" ng-controller="PersonCtrl as person"><!-- controllerName as controllerAlias -->
+                    <div class="row">
+                        <div class="col-lg-4 " ng-repeat="member in person.members" ng-hide="member.isDeprecatedMember">
+                            <div class="thumbnail">
+                                <h1>{{ member.name }}</h1>
+                                <blockquote ng-repeat="article in member.articles">
+                                    <b>stars: {{ article.stars }}</b>
+                                    <p>{{ article.body }}</p>
+                                    <cite>--{{ article.author }}</cite>
+                                </blockquote>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- end of content of tab 2 -->
+            <!-- content of tab 3 -->
+            <div ng-show="tabCtrl.isSet(3)" ng-include="'partition_1.html'"><!-- ng-include: include external html -->
+
+            </div>
+            <!-- end of content of tab 3 -->
+            <!-- content of tab 4 -->
+            <tab-element ng-show="tabCtrl.isSet(4)"><!-- include by element: set in controller.js -->
+            </tab-element>
+            <!-- end of content of tab 4 -->
+            <!-- content of tab 5 -->
+            <div tab-attribute ng-show="tabCtrl.isSet(5)"><!-- include by attribute: set in controller.js -->
+            </div>
+            <!-- end of content of tab 5 -->
+        </section>
+        <!-- 自定的element，定義在controller.js裡面 -->
+        <!--<member-tabs></member-tabs> -->
+    </div>
+</body>
+</html>

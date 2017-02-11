@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <link href="../lib/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <!-- jQuery (使用Bootstrap的JavaScript外掛) -->
+    <script src="//code.jquery.com/jquery.js"></script>
+    <!-- 在下面加入所有已編譯外掛，或是當需要時加入獨立檔案 -->
+    <script src="../lib/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+    <style type="text/css">
+        html {
+            background: url('images/cscbackground.jpg') no-repeat center center fixed;
+            -webkit-background-size: cover;
+            -moz-background-size: cover;
+            -o-background-size: cover;
+            background-size: cover;
+        }
+
+        body {
+            padding-top: 20px;
+            background: transparent;
+        }
+
+        .panel {
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+
+        /*body{*/
+            /*padding-top: 20px;*/
+            /*background-image:url('images/cscbackground.jpg');*/
+            /*background-repeat:no-repeat;*/
+            /*background-attachment:fixed;*/
+            /*background-position:center;*/
+        /*}*/
+
+    </style>
+    <title></title>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-md-4 col-md-offset-4">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <div class="text-center">
+                        <h1>中鋼集團董事會<br />無紙議事服務雲</h1>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <form class="form-horizontal" role="form">
+                        <div class="form-group col-md-12">
+                            <img class="img-thumbnail" alt="140x140" src="images/cscbanner.png" />
+                        </div>
+                        <div class="form-group col-md-12">
+                            <div class="input-group">
+                                <div class="input-group-addon">公司別</div>
+                                <div class="">
+                                    <select class="form-control">
+                                        <option value="0001">中鋁</option>
+                                        <option value="0002">中冠</option>
+                                        <option value="0006">中運</option>
+                                        <option value="0010">中貿</option>
+                                        <option value="0011">中盈</option>
+                                        <option value="0012">中欣</option>
+                                        <option value="0016">中龍</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="form-group col-md-12">
+                            <div class="input-group">
+                                <div class="input-group-addon">帳號</div>
+                                <input class="form-control" id="UserId" name="UserId" type="text" />
+                            </div>
+                        </div>
+                        <br />
+                        <div class="form-group col-md-12">
+                            <div class="input-group">
+                                <div class="input-group-addon">密碼</div>
+                                <input class="form-control" id="Passwd" name="Passwd" type="password" />
+                            </div>
+                        </div>
+                        <div class="form-group col-md-12">
+                            <div class="input-group">
+                                <div class="input-group-addon">驗證碼</div>
+                                <input class="form-control" id="checkCode" name="checkCode" type="text" placeholder="請輸入下圖中的文字"/>
+                                <span class="input-group-btn"><button class="btn btn-default" type="button">重整圖片</button></span>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-12">
+                            <img class="img-thumbnail" alt="140x140" src="images/cscbanner.png" />
+                        </div>
+                        <div class="form-group col-md-12">
+                            <button type="submit" class="btn btn-success btn-lg btn-block">登入</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="panel-footer">
+                    <p>
+                        中國鋼鐵股份有限公司 版權所有 ©2015 ChinaSteel All Rights Reserved.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!--<div class="well container-fluid">-->
+        <!--<div class="panel panel-primary">-->
+            <!--<div class="panel-body">-->
+                <!--<h1></h1>-->
+            <!--</div>-->
+            <!--<div class="panel-footer">-->
+                <!--<h2></h2>-->
+                <!--<h2></h2>-->
+                <!--<button>is authorized</button>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+
+    <!--<div class="msg"><font color="RED" id="Msg"></font></div>-->
+    <!--<div class="signin" align="center">-->
+        <!--<input type="hidden" id="CompId" name="CompId"	value="<%=compId %>" >-->
+        <!--帳號<input type="text" id="UserId" name="UserId"	value="<%=userId %>" style="text-transform: uppercase;">-->
+        <!--<br>-->
+        <!--密碼<input type="password" id="Passwd" name="Passwd"><input type="text" id="Passwd2" name="Passwd2">-->
+        <!--<br>-->
+        <!--驗證碼<input type="text" id="insertCode" name="insertCode" placeholder="請輸入下圖中的文字" style="text-transform:uppercase">-->
+        <!--<input type="button" id="reloadBtn" value="換個圖片" onclick="reloadImage()">-->
+        <!--<img src="dsjjBodCheckCode.jsp" id="identity" onload="reloadBtn.disabled = false;" />-->
+        <!--<input type="submit" class="submit" id="Button" name="Button"-->
+               <!--onmouseover="mouseOver(this.form.name,this.id)"-->
+               <!--onmouseout="mouseOut(this.form.name,this.id)"-->
+               <!--onmousedown="mouseClick(this.form.name,this.id)"-->
+               <!--onclick="return loginCheck()" value="登入　Log-in">-->
+        <!--<input type="button" class="chgPwd" value="重選子公司"-->
+               <!--onclick="hideLogin()">-->
+
+    <!--</div>-->
+</body>
+</html>

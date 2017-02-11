@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+<meta charset="UTF-8">
+<title>Scope Chain</title>
+</head>
+<body>
+	<script language="JavaScript">
+        var globalVariable = 10;
+        function outer() {
+            var localVariable = 20;
+            anotherGlobalVariable = 15; // 沒有使用var去宣告的變數是全域變數
+            function inner() {
+                var z = 30;
+            }
+            return alert("local fuction scope: " + localVariable);
+        }
+
+        function globalFunction() {
+            return alert("global function");
+        }
+
+        function globalFunction_2(firstName) {
+            function capitalizeName() {
+                return firstName.toUpperCase();
+            }
+            var capitalized = capitalizeName(); // capitalizeName()不需要傳入任何參數，就可以呼叫到外層的firstName
+            return capitalized;
+        }
+        alert("global scope: " + globalVariable);
+        globalFunction();
+        outer();
+        // alert("local variable: " + localVariable);  // 這行會發生錯誤，因為變數屬於該區域，非全域
+        alert("another global scope: " + anotherGlobalVariable);
+        alert(globalFunction_2("Peter"));   // 印出PETER
+    </script>
+</body>
+</html>

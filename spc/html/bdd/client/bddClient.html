@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>資料查詢元件</title>
+
+  <link rel="stylesheet" href="lib/jquery-ui/css/jquery-ui.min.css"/>
+  <link rel="stylesheet" href="lib/jqgrid/css/ui.jqgrid.css"/>
+  <link rel="stylesheet" href="lib/todc-bootstrap/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="lib/todc-bootstrap/css/todc-bootstrap.min.css"/>
+  <link rel="stylesheet" href="lib/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css"/>
+  <link rel="stylesheet" href="bddClient.css">
+  <script src="bddUtil.js"></script>
+  <script src="lib/jquery/jquery-1.9.1.min.js"></script>
+  <script src="lib/bootstrap/js/bootstrap.min.js"></script>
+  <script src="lib/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+  <script src="lib/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-TW.js"></script>
+  <script src="lib/jquery-ui/jquery-ui.min.js"></script>
+  <script src="lib/jqgrid/js/i18n/grid.locale-tw.js"></script>
+  <script src="lib/jqgrid/js/jquery.jqGrid.src.js"></script>
+  <script src="bddClient.js"></script>
+
+</head>
+<body>
+<ul class="nav nav-tabs nav-tabs-google">
+  <li class="active"><a href="#bdd-filter" data-toggle="tab">過濾條件</a></li>
+  <li><a href="#bdd-report" data-toggle="tab" onclick="_bdd.getRptData(this)">資料報表</a></li>
+  <li><a href="#bdd-unique" data-toggle="tab" onclick="_bdd.getUniData(this)">鍵值查詢</a></li>
+</ul>
+<div class="tab-content">
+  <div id="bdd-filter" class="tab-pane active">
+    <nav class="navbar navbar-toolbar" role="navigation">
+      <div class="btn-toolbar" role="toolbar">
+        <button class="btn btn-default" onclick="_bdd.showDataOrderDialog()">資料排序</button>
+        <button class="btn btn-default" onclick="_bdd.showFilterDialog()">公式過濾</button>
+      </div>
+    </nav>
+    <div class="bdd-filter-cols"></div>
+  </div>
+  <div id="bdd-report" class="tab-pane">
+    <nav class="navbar navbar-toolbar" role="navigation">
+      <div class="btn-toolbar" role="toolbar">
+        <button class="btn btn-default" onclick="_bdd.exportExcel(this)">匯出Excel</button>
+      </div>
+    </nav>
+    <div id="bdd-report-list">
+      <table id="bdd-report-grid"></table>
+    </div>
+  </div>
+  <div id="bdd-unique" class="tab-pane">
+    <div style="height: 4px;"></div>
+    <div id="bdd-unique-list">
+      <table id="bdd-unique-grid"></table>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>JQuery Hello World</title>
+    <script src="../lib/jquery/jquery-1.11.1.js"></script>
+    <!-- Bootstrap -->
+    <link href="../lib/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <!-- HTML5 shim 和 Respond.js 讓IE8支援HTML5元素和媒體查詢 -->
+    <!--[if lt IE 9]>
+    <script src="../../assets/js/html5shiv.js"></script>
+    <script src="../../assets/js/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+    <nav class="navbar navbar-default" role="navigation">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button id="click" class="me" type="button">Hello Me!</button>
+                <input type="text" class="mouse" name="LastName" value="Mouse">
+                <button id="click_2" class="me2" type="button">Bootstrap!</button>
+            </div>
+        </div>
+    </nav>
+    <hr />
+
+    <div class="container">
+
+        <div class="starter-template">
+            <h1>Hello, world!</h1>
+            <h1>Bootstrap starter template</h1>
+            <p class="lead">Use this document as a way to quickly start any new project.<br> All you get is this text and a mostly barebones HTML document.</p>
+        </div>
+
+    </div><!-- /.container -->
+
+    <script language="JavaScript">
+        var meLong = $(".me").length;   // 匹配的元素會以陣列傳回，所以length可以得到匹配元素的數量
+        var mouseAttr = $(".mouse").attr("value");    // 找到匹配元素的匹配屬性值
+        var container = $(".container").get();  // JQuery object 轉為 DOM object，JQuery物件只能用JQuery方法，反之DOM物件亦然
+        jQuery(container);  // DOM object 轉為 JQuery object
+        $(".me").click(function() {
+            //要做的事情
+            $(".mouse").attr("value", "hello, mouseAttr: " + mouseAttr + ", meLong: " + meLong);
+        });
+        $("#click_2").click(function() {
+            $("#click").addClass("btn btn-default navbar-btn");
+            $(".mouse").addClass(".navbar-link");
+            $("#click_2").addClass("btn btn-default navbar-btn");
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,74 @@
+/*todc-bootstrap*/
+.img-responsive {
+    width: 100%;
+}
+.navbar-toolbar {
+    margin-bottom: 0px;
+}
+/*icsc*/
+.icsc-brand {
+    height: 36px;
+    float: left;
+    padding: 5px 8px;
+    margin-right: -15px;
+}
+/*#bas-menu {*/
+  /*background-color: #f2f5f7;*/
+/*}*/
+/*bas*/
+.bas-sidebar {
+  float: left;
+  width: 20%;
+}
+.bas-content {
+  float: left;
+  width: 80%;
+}
+.bas-prop-value {
+  width: 80px;
+  color: chocolate;
+}
+#bas-step2-grids-left {
+  float: left;
+  width: 25%;
+}
+#bas-step2-grids-right {
+  float: left;
+  width: 74.85%;
+}
+/*.navbar {*/
+  /*font-size: 16px;*/
+  /*min-height: 0px;*/
+  /*margin-bottom: 0px;*/
+/*}*/
+/*.navbar-form {*/
+  /*margin-top: 4px;*/
+  /*margin-bottom: 4px;*/
+/*}*/
+/*.nav>li>a {*/
+  /*padding: 7px 7px;*/
+  /*font-size: 16px;*/
+/*}*/
+/*label {*/
+  /*font-weight: 100;*/
+/*}*/
+/*.btn {*/
+  /*padding: 4px 8px;*/
+  /*font-size: 16px;*/
+/*}*/
+/*.navbar-form .control-label {*/
+  /*font-size: 16px;*/
+/*}*/
+/*.form-control {*/
+  /*font-size: 15px;*/
+/*}*/
+/*.dropdown-menu {*/
+  /*font-size: 16px;*/
+/*}*/
+/*.bootstrap-select.btn-group:not(.input-group-btn), .bootstrap-select.btn-group[class*="span"] {*/
+  /*margin-bottom: 0px;*/
+/*}*/
+.ui-dialog .ui-dialog-titlebar {
+  padding: .2em .3em !important;
+  background: #deedf7;
+}

@@ -1,0 +1,45 @@
+<div class="container-fluid">
+  <div id="bdd-store" class="tab-content">
+    <!-- 資料源 -->
+    <div id="bdd-data-src" class="tab-pane active">
+      <nav class="navbar navbar-toolbar" role="navigation">
+        <div class="container-fluid">
+          <div class="btn-toolbar" role="toolbar">
+            <div class="btn-group">
+              <button class="btn btn-default" ng-click="table.show($event)">資料表</button>
+              <button class="btn btn-default disabled" ng-class="{'disabled': src.list.length === 0}" ng-click="relation.show($event, 'relTable')">關聯表</button>
+            </div>
+            <button class="btn btn-default disabled" ng-class="{'disabled': src.list.length === 0}" ng-click="essential.show()">必要條件</button>
+            <button class="btn btn-default disabled" ng-class="{'disabled': target.list.length === 0}" ng-click="advQueryPane.show($event)">進階查詢預覽</button>
+          </div>
+        </div>
+      </nav>
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="panel panel-info">
+              <div class="panel-heading">
+                <h3 class="panel-title">來源欄位清單</h3>
+              </div>
+              <div class="panel-body">
+                <div id="bdd-src-grid" ui-grid="src.gridOpts" class="grid" ui-grid-selection ui-grid-resize-columns ui-grid-auto-resize></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="panel panel-info">
+              <div class="panel-heading">
+                <h3 class="panel-title">設定欄位清單</h3>
+              </div>
+              <div class="panel-body">
+                <div id="bdd-target-grid" ui-grid="target.gridOpts" external-scopes="target" class="grid" ui-grid-resize-columns ui-grid-edit ui-grid-cellNav ui-grid-auto-resize></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

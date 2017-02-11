@@ -1,0 +1,33 @@
+<html>
+<head>
+<title>JavaScript Object</title>
+
+<script>
+			<!--
+			document.write("Document URL : " + document.URL + "<br>");
+			document.write("Date of  last modified :" + document.lastModified + "<br>");
+			document.write("Document Title: " + document.title + "<br>");
+			document.write("The background color is " + document.bgColor
+			+ " and the text color is " + document.fgColor);
+			document.fgColor = "yellow";
+			document.bgColor = "black";
+			
+			function testObject() {
+				this.attrA;
+				this.attrB;
+			}
+			testObject.prototype.testFunction = function() {
+				return this.attrA + this.attrB;
+			}
+			var obj = new testObject();
+			obj.attrA = 5;
+			obj.attrB = 8;
+			document.write("<p>" + obj.testFunction() + "</p>");
+			//-->
+		</script>
+
+</head>
+<body>
+
+</body>
+</html>

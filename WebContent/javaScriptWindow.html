@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>JavaScript Window</title>
+</head>
+<body>
+	<h1>alert: 彈出訊息框</h1>
+	<form>
+		<input type="button" value="Pop-up an alert box"
+			onClick="alert('Hi, I am alert box.')">
+	</form>
+	<hr />
+	<h1>confirm: 彈出詢問框</h1>
+	<p>按下確定就傳回 true，按下取消就傳回 false。</p>
+	<form>
+		<input type="button" value="Pop-up an confirm box"
+			onClick="var reply = confirm('Are you sure?'); alert(reply)">
+	</form>
+	<hr />
+	<h1>prompt(message, inputDefault): 彈出輸入框</h1>
+	<p>message是輸入框的訊息，inputDefault是預設的輸入資料，最後傳回輸入了的資料</p>
+	<form>
+		<input type="button" value="Ask me a question"
+			onClick=" var name = prompt('What is your name?' , 'You name here'); alert('Hi, ' + name) ">
+	</form>
+	<hr />
+	<h1>window.open(url, name, features): 開啟新視窗</h1>
+	<p>url是要載入的URL，如果是空字串，會開啟空視窗；name是新視窗名稱，為&lt;a&gt;、&lt;form&gt;的target屬性；features是選擇性屬性。</p>
+	<table>
+		<tr>
+			<th>features的屬性</th>
+			<th>說明</th>
+		</tr>
+		<tr>
+			<td>height</td>
+			<td>視窗高度pixel</td>
+		</tr>
+		<tr>
+			<td>width</td>
+			<td>視窗寬度pixel</td>
+		</tr>
+		<tr>
+			<td>location</td>
+			<td>位置欄(值可以為: 1或0、yes或no)</td>
+		</tr>
+		<tr>
+			<td>directories</td>
+			<td>分類目錄列(值可以為: 1或0、yes或no)</td>
+		</tr>
+		<tr>
+			<td>menubar</td>
+			<td>主選單(值可以為: 1或0、yes或no)</td>
+		</tr>
+		<tr>
+			<td>scrollbars</td>
+			<td>捲軸(值可以為: 1或0、yes或no)</td>
+		</tr>
+		<tr>
+			<td>status</td>
+			<td>狀態列(值可以為: 1或0、yes或no)</td>
+		</tr>
+		<tr>
+			<td>toolbar</td>
+			<td>工具列(值可以為: 1或0、yes或no)</td>
+		</tr>
+		<tr>
+			<td>resizable</td>
+			<td>可否改變視窗大小(值可以為: 1或0、yes或no)</td>
+		</tr>
+	</table>
+	<form>
+		<input type="button" value="open a window"
+			onClick="var winvar = window.open('', 'winname', 'location,menubar=1 status,toolbar,scrollbars=0');
+				winvar.document.write('<br>My name is ' + winvar.name);
+				winvar.title = 'A New Window'
+				winvar.alert('and my title is ' + winvar.title);">
+	</form>
+	<hr />
+	<h1>window.close(): 關閉視窗</h1>
+	<input type="button" value="Close this window" onClick="window.close()">
+	<!-- 測試不WORK -->
+	<hr />
+	<h1>setTimeout(statement, delay): 在某個時段過後自動執行某敘述</h1>
+	<p>statement是字串，為要執行的JavaScript敘述；delay是微秒。</p>
+	<script type="text/javascript">
+			var timer = setTimeout("alert('Hi, I am alert box.(請看setTimeout()倒數計時段落)')", 5000);
+		</script>
+	<hr />
+	<h1>clearTimeout(timer): 停止計時器</h1>
+	<p>以下例子會在5秒後跳出alert框，除非按下Stop counting的按鈕。</p>
+
+	<form>
+		<input type="button" value="Stop counting"
+			onClick="clearTimeout(timer)">
+	</form>
+	<hr />
+
+</body>
+</html>

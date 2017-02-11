@@ -1,0 +1,366 @@
+<!--<div ng-controller="dataSetCtrl"> </div>-->
+<nav class="navbar navbar-toolbar" role="navigation">
+  <div class="container-fluid">
+    <div class="btn-toolbar" role="toolbar" ng-controller="advQueryCtrl">
+      <div class="btn-group">
+        <button class="btn btn-default" ng-click="table.show($event)">資料表</button>
+        <button class="btn btn-default" ng-class="{ 'disabled':src.list.length === 0}"
+                ng-click="relation.show($event, 'relTable')">關聯表
+        </button>
+      </div>
+      <div class="btn-group" ng-controller="makeColCtrl">
+        <button class="btn btn-default " ng-class="{'disabled': src.list.length === 0}" ng-click="makeNumCol.show()">
+          自定義欄位(數值型)
+        </button>
+        <button class="btn btn-default " ng-class="{'disabled': src.list.length === 0}" ng-click="makeStrCol.show()">
+          自定義欄位(字串型)
+        </button>
+      </div>
+      <button class="btn btn-default " ng-class="{'disabled': src.list.length === 0}" ng-click="essential.show()">必要條件
+      </button>
+      <button class="btn btn-default " ng-class="{'disabled': src.list.length === 0}" ng-click="sqlPrev.show()">SQL預覽
+      </button>
+      <button class="btn btn-default btn btn-lg btn-success" ng-class="{'disabled': target.list.length === 0}"
+              ng-click="dataPrev.show()">資料預覽
+      </button>
+      <!--ng-class="{'true':'disabled'}[isDisabled]"-->
+    </div>
+  </div>
+</nav>
+
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-info">
+      <div class="panel-heading">
+        <h3 class="panel-title">欄位選擇清單{{src.list.length !== 0 ? '：' + activeDataCom.comTitle + '：' +
+          activeDataCom.infoId :
+          ''}}</h3>
+      </div>
+      <div class="panel-body">
+        <div id="bdg-src-grid" ui-grid="src.gridOpts" class="grid" ui-grid-edit ui-grid-cellNav ui-grid-resize-columns
+             ui-grid-auto-resize>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-info">
+      <div class="panel-heading">
+        <h3 class="panel-title">選定軸線清單</h3>
+      </div>
+      <div class="panel-body">
+        <div id="bdg-target-grid" ui-grid="target.gridOpts" external-scopes="target" class="grid"
+             ui-grid-resize-columns ui-grid-edit ui-grid-cellNav ui-grid-auto-resize></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--資料表-->
+<script type="text/ng-template" id="tableModal">
+  <div class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-body">
+          <div ui-grid="table.gridOpts" class="grid" ui-grid-selection ui-grid-resize-columns ui-grid-auto-resize></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</script>
+
+<!--關聯表-->
+<script type="text/ng-template" id="relationModal">
+  <div class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" ng-click="$hide()">&times;</button>
+          <h4 class="modal-title">關聯表挑選清單</h4>
+        </div>
+        <div class="modal-body">
+          <div ui-grid="relation.gridOpts" class="grid" ui-grid-selection ui-grid-resize-columns
+               ui-grid-auto-resize></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</script>
+
+<!--自訂義欄位(數值型)-->
+<script type="text/ng-template" id="makeNumColModal" ng-controller="makeColCtrl">
+  <div class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" ng-click="$hide()">&times;</button>
+          <h4 class="modal-title">自定義欄位(數值型)</h4>
+        </div>
+        <div class="modal-body">
+          <form class="form-horizontal" role="form">
+            <div class="row bdg-row">
+              <label class="col-sm-1 control-label">ID <sup>*</sup>：</label>
+
+              <div class="col-sm-3">
+                <input class="form-control" ng-model="makeNumCol.colId" placeholder="請輸入欄位ID">
+              </div>
+              <label class="col-sm-2 control-label">名稱 <sup>*</sup>：</label>
+
+              <div class="col-sm-3">
+                <input class="form-control" ng-model="makeNumCol.colName" placeholder="請輸入欄位名稱">
+              </div>
+              <button class="btn btn-success" ng-click="makeNumCol.addDefCol()">新增欄位</button>
+            </div>
+          </form>
+          <div id="bdg-make-num-col-grid" ui-grid="makeNumCol.colGridOpts" class="grid" ui-grid-selection
+               ui-grid-resize-columns ui-grid-auto-resize></div>
+          <form class="form-horizontal" role="form">
+            <div class="row bdg-row">
+              <label class="col-sm-2 control-label">運算子與函數：</label>
+
+              <div class="col-sm-10 btn-group">
+                <button class="btn btn-info bdg-operator" title="加" ng-click="makeNumCol.op('+')">＋</button>
+                <button class="btn btn-info bdg-operator" title="減" ng-click="makeNumCol.op('-')">－</button>
+                <button class="btn btn-info bdg-operator" title="乘" ng-click="makeNumCol.op('*')">ｘ</button>
+                <button class="btn btn-info bdg-operator" title="除" ng-click="makeNumCol.op('/')">／</button>
+                <button class="btn btn-info bdg-operator" title="次方" ng-click="makeNumCol.op('^')">︿</button>
+                <button class="btn btn-info" title="加總" ng-click="makeNumCol.func('SUM')">SUM</button>
+                <button class="btn btn-info" title="平均" ng-click="makeNumCol.func('AVG')">AVG</button>
+                <button class="btn btn-info" title="最小值" ng-click="makeNumCol.func('MIN')">MIN</button>
+                <button class="btn btn-info" title="最大值" ng-click="makeNumCol.func('MAX')">MAX</button>
+                <button class="btn btn-info" title="計數" ng-click="makeNumCol.func('COUNT')">COUNT</button>
+                <button class="btn btn-info" title="計數(*)" ng-click="makeNumCol.func('COUNT_ALL')">COUNT(*)</button>
+              </div>
+            </div>
+            <div class="row bdg-row">
+              <label class="col-sm-2 control-label">數字：</label>
+
+              <div class="col-sm-7">
+                <input type="number" class="form-control" ng-model="makeNumCol.input" placeholder="請輸入數字"
+                       onkeypress="_bdg.util.validateNum()">
+              </div>
+              <button class="btn btn-info" ng-click="makeNumCol.fillOpd()">填入運算元</button>
+            </div>
+            <div class="row bdg-row">
+              <div class="col-sm-9">
+                <textarea class="form-control" ng-model="makeNumCol.subRule"
+                          placeholder="子公式說明：完成後，按確定可置入子公式暫存區，或按總公式達成總公式輸入。" rows="2"></textarea>
+              </div>
+              <button class="btn btn-danger" ng-click="makeNumCol.clearSubRule()">清除</button>
+              <button class="btn btn-success" ng-click="makeNumCol.addSubRule()">確定</button>
+              <button class="btn btn-success" ng-click="makeNumCol.setRule()">總公式</button>
+            </div>
+          </form>
+          <div id="bdg-make-num-rule-grid" ui-grid="makeNumCol.ruleGridOpts" class="grid" external-scopes="makeNumCol"
+               ui-grid-selection ui-grid-resize-columns ui-grid-auto-resize></div>
+          <form class="form-horizontal" role="form">
+            <div class="row bdg-row">
+              <div class="col-sm-9">
+                <textarea class="form-control" ng-model="makeNumCol.rule"
+                          placeholder="總公式說明：請依序選擇運算元與運算子，完成單個子公式，再組合子公式或欄位，達成您所需的總公式。" rows="3"></textarea>
+              </div>
+              <button class="btn btn-danger" ng-click="makeNumCol.clearRule()">清除總公式</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</script>
+
+<!--自訂義欄位(字串型)-->
+<script type="text/ng-template" id="makeStrColModal" ng-controller="makeColCtrl">
+  <div class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" ng-click="$hide()">&times;</button>
+          <h4 class="modal-title">自定義欄位(字串型)</h4>
+        </div>
+        <div class="modal-body">
+          <form class="form-horizontal" role="form">
+            <div class="row bdg-row">
+              <label class="col-sm-1 control-label">ID <sup>*</sup>：</label>
+
+              <div class="col-sm-3">
+                <input class="form-control" ng-model="makeStrCol.colId" placeholder="請輸入欄位ID">
+              </div>
+              <label class="col-sm-2 control-label">名稱 <sup>*</sup>：</label>
+
+              <div class="col-sm-3">
+                <input class="form-control" ng-model="makeStrCol.colName" placeholder="請輸入欄位名稱">
+              </div>
+              <button class="btn btn-success" ng-click="makeStrCol.addDefCol()">新增欄位</button>
+            </div>
+          </form>
+          <div id="bdg-make-str-col-grid" ui-grid="makeStrCol.colGridOpts" class="grid" ui-grid-selection
+               ui-grid-resize-columns ui-grid-auto-resize></div>
+          <form class="form-horizontal" role="form">
+            <div class="row bdg-row">
+              <label class="col-sm-2 control-label">起始位置：</label>
+
+              <div class="col-sm-2">
+                <input type="number" class="form-control" ng-model="makeStrCol.pos"
+                       ng-change="makeStrCol.posLength('pos')" placeholder="由1開始" onkeypress="_bdg.util.validateNum()">
+              </div>
+              <label class="col-sm-2 control-label">長度：</label>
+
+              <div class="col-sm-3">
+                <input type="number" class="form-control" ng-model="makeStrCol.length"
+                       ng-change="makeStrCol.posLength('length')" placeholder="欲擷取字串長度"
+                       onkeypress="_bdg.util.validateNum()">
+              </div>
+            </div>
+            <div class="row bdg-row">
+              <div class="col-sm-9">
+                <textarea class="form-control" ng-model="makeStrCol.subRule"
+                          placeholder="欄位字串處理說明：請設定欄位字串處理方法，完成後，按確定即存入組合公式。" rows="1"></textarea>
+              </div>
+              <button class="btn btn-danger" ng-click="makeStrCol.clearSubRule()">清除</button>
+              <button class="btn btn-success" ng-click="makeStrCol.setRule()">確定</button>
+            </div>
+            <div class="row bdg-row">
+              <div class="col-sm-9">
+                <textarea class="form-control" ng-model="makeStrCol.rule" placeholder="組合公式說明：此乃經欄位字串處理過後的各欄位的聯結字串。"
+                          rows="3"></textarea>
+              </div>
+              <button class="btn btn-danger" ng-click="makeStrCol.clearRule()">清除總公式</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</script>
+
+<!--設定必要條件-->
+<script type="text/ng-template" id="essentialModal">
+  <div class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" ng-click="$hide()">&times;</button>
+          <h4 class="modal-title">設定必要條件</h4>
+        </div>
+        <div class="modal-body">
+          <div id="bdg-essential-col-grid" ui-grid="essential.colGridOpts" class="grid" ui-grid-selection
+               ui-grid-resize-columns ui-grid-auto-resize></div>
+          <form class="form-horizontal" role="form">
+            <div class="row bdg-row">
+              <label class="col-sm-2 control-label">運算子：</label>
+
+              <div class="col-sm-8 btn-group">
+                <button class="btn btn-info" ng-click="essential.op($event)">&gt;</button>
+                <button class="btn btn-info" ng-click="essential.op($event)">&lt;</button>
+                <button class="btn btn-info" ng-click="essential.op($event)">=</button>
+                <button class="btn btn-info" ng-click="essential.op($event)">&gt;=</button>
+                <button class="btn btn-info" ng-click="essential.op($event)">&lt;=</button>
+                <button class="btn btn-info" ng-click="essential.op($event)">!=</button>
+                <button class="btn btn-info" ng-click="essential.op($event)">like</button>
+                <button class="btn btn-info" ng-click="essential.op($event)">in</button>
+              </div>
+            </div>
+            <div class="row bdg-row">
+              <label class="col-sm-2 control-label">輸入器：</label>
+
+              <div class="col-sm-8">
+                <input type="text" class="form-control" ng-model="essential.input"
+                       placeholder="請輸入運算元內容，in的右運算元內容請以 ',' 隔開">
+              </div>
+              <button class="btn btn-info" ng-click="essential.fillOpd()">填入運算元</button>
+            </div>
+            <div class="row bdg-row">
+              <div class="col-sm-10">
+                <textarea class="form-control" ng-model="essential.rule"
+                          placeholder="單一規則說明：單一規則之各條件以AND串聯，完成後，按確定可置入規則清單。" rows="4"></textarea>
+              </div>
+              <button class="btn btn-danger" ng-click="essential.clearRule()">清除</button>
+              <button class="btn btn-success" ng-click="essential.addRule()">確定</button>
+            </div>
+          </form>
+          <div id="bdg-essential-rule-grid" ui-grid="essential.ruleGridOpts" class="grid" external-scopes="essential"
+               ui-grid-selection ui-grid-resize-columns ui-grid-auto-resize></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</script>
+
+<!--SQL 預覽-->
+<script type="text/ng-template" id="sqlPrevModal">
+  <div class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" ng-click="$hide()">&times;</button>
+          <h4 class="modal-title">SQL預覽</h4>
+        </div>
+        <div class="modal-body">
+          <div>{{sqlPrev.text}}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</script>
+
+<!--資料預覽-->
+<script type="text/ng-template" id="dataPrevModal">
+  <div class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-body">
+          <button type="button" class="close" ng-click="$hide()">&times;</button>
+          <ul class="nav nav-tabs nav-tabs-google">
+            <li class="active"><a href="#bdg-dp-filter" data-toggle="tab">資料預覽</a></li>
+            <li ><a href="#bdg-chart-preview" data-toggle="tab">圖型預覽</a></li>
+          </ul>
+          <div class="tab-content">
+            <div id="bdg-dp-filter" class="tab-pane active">
+              <nav class="navbar navbar-toolbar" role="navigation">
+                <div class="btn-toolbar" role="toolbar">
+                  <button class="btn btn-default" ng-click="orderBy.show()">資料排序</button>
+                  <!--<button class="btn btn-default btn btn-lg btn-success" ng-click="userFilter.show()">圖型預覽</button>-->
+                  <button class="btn btn-default btn btn-lg btn-success" ng-click="chartPrev1.show()">圖型預覽</button>
+                  <div id='win1' kendo-window="win1" title=""
+                       k-visible="false" k-on-resize="onResize()"
+                       k-on-open="win1visible = true" k-on-close="win1visible = false">
+                    <div id="c3Chart1"></div>
+                  </div>
+                </div>
+              </nav>
+              <div class="panel panel-info">
+                <div class="panel-heading">
+                  <h5 class="panel-title">資料預覽，總共{{dataPrev.rptTotal}}筆{{dataPrev.msg}}</h5>
+                </div>
+                <div class="panel-body" style="height: 577px;overflow: auto;">
+                  <div ui-grid="dataPrev.rptGridOpts" style="height: 99%;" class="grid" ui-grid-selection
+                       ui-grid-resize-columns ui-grid-auto-resize ui-grid-infinite-scroll></div>
+                </div>
+              </div>
+            </div>
+            <div id="bdg-chart-preview" class="tab-pane">
+              <div class="panel panel-info">
+                <div class="panel-heading">
+                  <label class="panel-title">資料清單，總筆數：{{advQueryPane.rptTotal}}{{advQueryPane.msg}}</label>
+                  <button class="btn btn-default btn-sm" ng-click="advQueryPane.export()">匯出Excel</button>
+                </div>
+                <div class="panel-body" style="height: 577px;overflow: auto;">
+                  <div ui-grid="advQueryPane.rptGridOpts" style="height: 99%;" class="grid" ui-grid-selection
+                       ui-grid-resize-columns ui-grid-auto-resize ui-grid-infinite-scroll></div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</script>
+
+
+
+
+

@@ -1,0 +1,38 @@
+/*todc-bootstrap*/
+.modal-header {
+    padding: 10px 15px 5px 15px;
+}
+.modal-footer {
+    padding: 5px 15px 5px 15px;
+}
+.modal-content {
+    overflow: auto;
+}
+/*.panel {*/
+    /*margin-bottom: 2px;*/
+/*}*/
+.navbar-toolbar {
+    margin-bottom: 4px;
+}
+.img-responsive {
+    width: 100%;
+}
+/*ui-grid*/
+
+/*bdd*/
+#bdd-essential-col-grid, #bdd-filter-col-grid, #bdd-order-col-grid, #bdd-make-num-col-grid {
+    height: 17em;
+}
+#bdd-essential-rule-grid, #bdd-filter-rule-grid, #bdd-order-rule-grid, #bdd-make-num-rule-grid {
+    height: 15em;
+}
+.bdd-row {
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+.bdd-operator {
+    width: 50px;
+}
+sup {
+    color: red;
+}

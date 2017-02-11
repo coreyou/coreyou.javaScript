@@ -1,0 +1,148 @@
+<div class="container-fluid" ng-controller="datasourceMgrCtrl">
+  <div class="panel panel-info">
+    <div class="panel-heading">
+      <h3 class="panel-title">資料源編輯</h3>
+    </div>
+    <div class="panel-body">
+      <div class="btn-toolbar" role="toolbar">
+        <div class="btn-group btn-group-sm">
+          <button type="button" class="btn btn-primary" ng-click="showAdd();">
+            <span class="glyphicon glyphicon-plus"></span> 新增
+          </button>
+        </div>
+      </div>
+      <div ui-grid="dsGrid.gridOptions" class="grid" style="height: 50vh" ui-grid-selection ui-grid-resize-columns
+           ui-grid-auto-resize
+           external-scopes="this"></div>
+    </div>
+  </div>
+
+  <script type="text/ng-template" id="dataSourceModal">
+    <div class="modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header" ng-show="title">
+            <button type="button" class="close" ng-click="$hide()">&times;</button>
+            <h4 class="modal-title" ng-bind="title"></h4>
+          </div>
+
+          <div class="modal-body">
+            <form name="dsForm" class="form-horizontal" novalidate>
+              <fieldset>
+                <div class="form-group" ng-class="{ 'has-error': dsForm.ds.$invalid && !dsForm.ds.$pristine }">
+                  <label class="col-lg-3 control-label">Datasource</label>
+
+                  <div class="col-lg-9">
+                    <input type="text" name="ds" class="form-control" ng-model="datasource.datasourceId"
+                           ui-validate="{duplicateName:'checkDSName($value)'}"
+                           ng-disabled="!isAdd"
+                           placeholder="Datasource Name"
+                           required>
+                    <span ng-show="dsForm.ds.$error.required && !dsForm.ds.$pristine" class="help-block">Datasource name
+                      is required.</span>
+                    <span ng-show="dsForm.ds.$error.duplicateName && !dsForm.ds.$pristine" class="help-block">Duplicate
+                      name.</span>
+                  </div>
+                </div>
+
+                <div class="form-group" ng-class="{ 'has-error': dsForm.driver.$invalid && !dsForm.driver.$pristine }">
+                  <label class="col-lg-3 control-label">Driver</label>
+
+                  <div class="col-lg-9">
+                    <input type="text" name="driver" class="form-control" ng-model="datasource.driver"
+                           placeholder="Driver" required>
+                    <span ng-show="dsForm.driver.$invalid && !dsForm.driver.$pristine" class="help-block">Driver is
+                      required.</span>
+                  </div>
+                </div>
+
+                <div class="form-group" ng-class="{ 'has-error': dsForm.url.$invalid && !dsForm.url.$pristine }">
+                  <label class="col-lg-3 control-label">URL</label>
+
+                  <div class="col-lg-9">
+                    <input type="text" name="url" class="form-control" ng-model="datasource.url" placeholder="URL"
+                           required>
+                    <span ng-show="dsForm.url.$invalid && !dsForm.url.$pristine"
+                          class="help-block">URL is required.</span>
+                  </div>
+                </div>
+
+                <div class="form-group" ng-class="{ 'has-error': dsForm.userId.$invalid && !dsForm.userId.$pristine }">
+                  <label class="col-lg-3 control-label">User</label>
+
+                  <div class="col-lg-9">
+                    <input type="text" name="userId" class="form-control" ng-model="datasource.userId"
+                           placeholder="User" required>
+                    <span ng-show="dsForm.userId.$invalid && !dsForm.userId.$pristine" class="help-block">User is
+                      required.</span>
+                  </div>
+                </div>
+
+                <div class="form-group"
+                     ng-class="{ 'has-error': dsForm.password.$invalid && !dsForm.password.$pristine }">
+                  <label class="col-lg-3 control-label">Password</label>
+
+                  <div class="col-lg-9">
+                    <input type="password" name="password" class="form-control" ng-model="datasource.password"
+                           placeholder="Password" required>
+                    <span ng-show="dsForm.password.$invalid && !dsForm.password.$pristine" class="help-block">Password
+                      is required.</span>
+                  </div>
+                </div>
+
+                <!--
+               <div class="form-group"
+                    ng-class="{ 'has-error': dsForm.readableUser.$invalid && !dsForm.readableUser.$pristine }">
+                 <label class="col-lg-3 control-label">Readable User</label>
+
+                 <div class="col-lg-9">
+                   <ui-select ng-model="readableUserList.selected">
+                     <ui-select-match placeholder="Assign readable user / group">{{$select.selected.value}}</ui-select-match>
+                     <ui-select-choices group-by="readableUserGroup" repeat="user in readableUserList | propsFilter: {value: $select.search}">
+                       <div ng-bind-html="user.value | highlight: $select.search"></div>
+                       <small>
+                         Description: {{user.label}}
+                       </small>
+                     </ui-select-choices>
+                   </ui-select>
+
+                  <input type="text" name="readableUser" class="form-control" ng-model="datasource.readableUser"-->
+                <!--placeholder="Readable User" required>
+               <span ng-show="dsForm.readableUser.$invalid && !dsForm.readableUser.$pristine" class="help-block">Readable user is required.</span>
+              </div>
+              </div>
+              -->
+                <div class="form-group"
+                     ng-class="{ 'has-error': dsForm.owner.$invalid && !dsForm.owner.$pristine }">
+                  <label class="col-lg-3 control-label">Owner</label>
+
+                  <div class="col-lg-9">
+                    <input type="text" name="owner" class="form-control" ng-model="datasource.owner"
+                           placeholder="Owner" required>
+                    <span ng-show="dsForm.owner.$invalid && !dsForm.owner.$pristine" class="help-block">Owner is
+                      required.</span>
+                  </div>
+                </div>
+              </fieldset>
+            </form>
+          </div>
+
+          <div class="modal-footer">
+            <div class="form-group">
+              <div class="col-lg-9 col-lg-offset-3">
+                <button type="button" class="btn btn-primary btn-sm" ng-class="{'disabled':dsForm.$invalid}"
+                        ng-click="isAdd ? add() : update()">
+                  {{isAdd ? '新增' : '儲存'}}
+                </button>
+                <button type="button" class="btn btn-default btn-sm" ng-class="{'disabled':dsForm.$invalid}"
+                        ng-click="testConnect()">測試連線
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </script>
+
+</div>

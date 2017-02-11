@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<!-- javascript中沒有專門處理cookie的API，所以必須自己寫程式來解析字串 -->
+<html>
+<head>
+<meta charset="UTF-8">
+<title>JavaScript Cookie Control</title>
+<script type="text/javascript">
+			function getCookie(name) {
+				var str = document.cookie;
+				if (!str || str.indexOf(name + "=") < 0) {	// 例如"C=Cvalue; A=Avalue"中找到"A="
+					return;
+				}
+				var cookies = str.split("; ");	// 用;分開所有cookie
+				for (var i = 0; i < cookies.length; i++) {
+					var cookie = cookies[i];
+					if (cookie.indexOf(name + "=") == 0) {	// 如果是"name="開頭，表示找到該cookie了
+						var value = cookie.substring(name.length + 1);	// 取value
+						return decodeURI(value);	// 將value編碼並傳回
+					}
+				}
+			}
+			function setCookie(name, value) {
+				document.cookie = name + "=" + encodeURI(value);
+			}
+		</script>
+</head>
+<body>
+	<div align="center" style="margin: 10px;">
+		<fieldset>
+			<legend>目前有效的Cookie</legend>
+			<div id="cookieDiv"></div>
+			<script type="text/javascript">
+					cookieDiv.innerHTML = document.cookie;
+				</script>
+		</fieldset>
+		<fieldset>
+			<legend></legend>
+			<table>
+				<tr>
+					<td>讀取cookie:</td>
+					<td><input id="name1" name="name1" /> <input class="button"
+						type="button" value="讀 取"
+						onclick="alert(getCookie(name1.value)); " /></td>
+				</tr>
+				<tr>
+					<td>設定cookie:</td>
+					<td></td>
+				</tr>
+				<tr>
+					<td align="right">Name屬性:</td>
+					<td><input id="name2" name="name2" /></td>
+				</tr>
+				<tr>
+					<td align="right">Value屬性:</td>
+					<td><input id="value2" name="value2" /></td>
+				</tr>
+				<tr>
+					<td></td>
+					<td><input type="button" value="設 定"
+						onclick="setCookie(name2.value, value2.value); cookieDiv.innerHTML = document.cookie; "
+						class="button" /></td>
+				</tr>
+			</table>
+		</fieldset>
+	</div>
+</body>
+</html>

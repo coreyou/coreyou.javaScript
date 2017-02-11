@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<!-- 看這篇閉包以前，可以先看scopeChain.html，然後再接著看yahooJavascriptModulePattern.html -->
+<html>
+<head lang="en">
+<meta charset="UTF-8">
+<title>Closure 閉包</title>
+</head>
+<body>
+	<script language="JavaScript">
+        function add(x) {
+            return function(y) {
+                return x + y;
+            };
+        }
+
+        var add5 = add(5);  // 回傳一個封閉內文的函式，並記憶封閉時的x參數值，最後指定到add5變數上。
+        alert(add5);
+        var no8 = add5(3);  // add5看起來會像是: function add5(y) { return 5 + y; }
+        alert(no8);
+
+        function addLinks() {
+            for (var i = 0; i < 5; i++) {
+                // 建立五個元素，顯示文字分別為Link0 ~ Link5
+                link = document.createElement("a");
+                link.innerHTML = "Link" + i;
+                // 為這五個元素建立onclick事件
+                link.onclick = function() {
+                    alert("Link" + i);  // 但實際上不管按下哪一個元素，都會alert Link5，既然onclick事件還沒被觸發，只是綁定到元素的事件上，i會繼續累加上去
+                };
+                document.body.appendChild(link);
+                document.write(" ");
+            }
+        }
+        window.onload = addLinks();
+
+        function addLinksImproved() {
+            for (var i = 0; i < 5; i++) {
+                // 建立五個元素，顯示文字分別為Link0 ~ Link5
+                link = document.createElement("a");
+                link.innerHTML = "Link" + i;
+                // 為這五個元素建立onclick事件，這裡必須使用閉包，才能在i綁定到事件上時，取得當下的值。
+                link.onclick = function(num) {  // 創造了一個參數num，也就是i當時的值的closure，函式會把那個值閉鎖起來，直到onclick觸發，就能夠回傳正確對應值
+                    return function() {
+                        alert("Link" + num);
+                    };
+                }(i);
+                document.body.appendChild(link);
+                document.write(" ");
+            }
+        }
+        window.onload = addLinksImproved();
+
+        // Self-invoking functoins 是一種立刻執行，並建構自己的closure的函式
+        (function() {
+            var msg = "Self-invoking functions";
+            alert(msg);
+        })();
+        alert(msg); // 拋出not defined錯誤
+    </script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+/*todc-bootstrap*/
+.img-responsive {
+    width: 100%;
+}
+.navbar-toolbar {
+    margin-bottom: 0px;
+}
+/*icsc*/
+.icsc-brand {
+    height: 36px;
+    float: left;
+    padding: 5px 8px;
+    margin-right: -15px;
+}
+/*bdg*/
+.bdg-content {
+    float: left;
+    width: 100%;
+}
+#bdg-basic-left {
+    float: left;
+    width: 20%;
+    max-width: 20%;
+}
+#bdg-design-chart-content {
+    float: left;
+    width: 80%;
+    max-width: 80%;
+}
+.bdg-prop-value {
+    width: 80px;
+    color: chocolate;
+}
+.bdg-axes-setup {
+    font-weight: 700;
+}
+#bdg-axes-setup-src {
+    height: 50%;
+}
+#bdg-axes-setup-tar {
+    /*max-width: 49%;*/
+    width: 100%;
+}
+#bdg-essential-col-input,#bdg-step2-data-extract-input {
+    width: 654px;
+}
+#bdg-essential-col-rule,#bdg-step2-data-extract-rule {
+    width: 720px;
+}
+.bdg-waring-msg {
+    color: red;
+    font-weight: bold;
+}
+.bdg-operator {
+    width: 50px;
+    /*font-size: 18px !important;*/
+}
+.bdg-formula-zone {
+    width: 600px;
+}
+/*ui components*/
+.ui-jqgrid tr.jqgrow td {
+    border-bottom-width: 2px !important;
+}
+.ui-jqgrid .ui-jqgrid-htable th div {
+    height: 21px !important;
+}
+.ui-jqgrid .ui-jqgrid-sortable {
+    cursor: default !important;
+}
+.ui-dialog .ui-dialog-titlebar {
+    padding: .2em .3em !important;
+    background: #deedf7;
+}
+/*.btn-group, .btn-group-vertical {*/
+    /*vertical-align: -webkit-baseline-middle;*/
+/*}*/
+.table {
+    margin-bottom: 2px;
+}
+sup {
+    color: red;
+}
+.grid.sample {
+    width: 100%;
+    height: 85%;
+}

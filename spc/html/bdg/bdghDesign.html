@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html ng-app="bdgApp" ng-controller="bdgCtrl">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>圖型元件設計平台</title>
+
+    <link rel="stylesheet" href="res/lib/todc-bootstrap/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="res/lib/todc-bootstrap/css/todc-bootstrap.min.css"/>
+    <link rel="stylesheet" href="../pass/res/lib/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css"/>
+    <link rel="stylesheet" href="../pass/res/lib/angular-motion/dist/angular-motion.min.css"/>
+    <link rel="stylesheet" href="../pass/res/lib/ui-grid/ui-grid.css"/>
+    <link rel="stylesheet" href="res/css/bdg.css">
+
+    <script src='../pass/res/lib/gk/lib/require/require.min.js'></script>
+    <script src="../pass/res/lib/gk/lib/jquery/jquery-1.9.1.min.js"></script>
+    <script src="../pass/res/lib/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../pass/res/lib/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+    <script src="../pass/res/lib/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-TW.js"></script>
+    <script src="res/lib/bootbox/bootbox.js"></script>
+    <script src="../pass/res/lib/angular/angular.min.js"></script>
+    <script src="../pass/res/lib/ng-icsc/ng-icsc.js"></script>
+    <script src="res/js/bdgModules.js"></script>
+    <script src="../pass/res/lib/angular/angular-animate.min.js"></script>
+    <script src="../pass/res/lib/angular/angular-sanitize.min.js"></script>
+    <script src="../pass/res/lib/angular-strap/angular-strap.min.js"></script>
+    <script src="../pass/res/lib/angular-strap/angular-strap.tpl.min.js"></script>
+    <script src="../pass/res/lib/ui-grid/ui-grid.js"></script>
+    <script src='../pass/res/lib/gk/lib/gk/jquery.gk-0.6.min.js'></script>
+    <script gk-tags='jqgrid,jqcol' src='../pass/res/lib/gk/gk-loader.js'></script>
+    <script src="res/lib/teechart/teechart.js"></script>
+    <script src="res/lib/teechart/teechart-extras.js"></script>
+    <script src="res/lib/teechart/teechart-gauges.js"></script>
+    <script src="res/lib/jstat/jstat.js"></script>
+    <script src="res/js/bdgDrawer.js"></script>
+    <script src="res/js/bdgReface.js"></script>
+    <script src="res/js/bdgAdvQuery.js"></script>
+    <script src="res/js/bdgDesigner.js"></script>
+    <script src="res/js/bdgUtil.js"></script>
+    <script src="res/js/controller/bdgCtrl.js"></script>
+    <script>
+      $(document).on('gkComponentsReady', function () {
+        "use strict";
+        var $step1Grid = $("#bdg-chart-sizing-grid"),
+            step1GridData = [],
+            contentRowHeight;
+        
+        $step1Grid.closest('.ui-jqgrid-bdiv').css('overflow', 'hidden');
+        for (var i = 0; i < 12; i++) {
+          step1GridData.push({
+            'c1': '', 'c2': '', 'c3': '', 'c4': '', 'c5': '', 'c6': '', 'c7': '', 'c8': '', 'c9': '', 'c10': '',
+            'c11': '', 'c12': '', 'c13': '', 'c14': '', 'c15': '', 'c16': '', 'c17': '', 'c18': '', 'c19': '', 'c20': ''
+          });
+        }
+        $step1Grid.gk('render', step1GridData);
+        // average row height
+        contentRowHeight = Math.floor(($step1Grid.closest('.ui-jqgrid-bdiv').height() - 26) / 12);
+        $step1Grid.find('.ui-row-ltr').height(contentRowHeight);
+        $step1Grid.off('mouseover');
+        $step1Grid.on('mouseover', function (e) {
+          var x = e.target.cellIndex + 1,
+              y = $(e.target).closest('td').closest('tr.jqgrow').attr('id');
+          if (!_bd.reface.sizingState()) {
+            _bd.reface.setSize(x, y);
+          }
+        });
+        $step1Grid.on('click', function (e) {
+          var $grid = $('#bdg-chart-sizing-grid'),
+              colNum = e.target.cellIndex + 1,
+          	  rowId = $grid.jqGrid("getGridParam", "selrow");
+          $grid.find('.jqgrow[id="'+rowId+'"]').removeClass('ui-state-highlight');
+          if (!_bd.reface.sizingState()) {
+            $('#bdg-chart-size').text(colNum + 'x' + rowId);
+            _bd.reface.setRealSize(colNum, rowId);
+            _bd.reface.sizingState('done');
+          }
+        });
+
+        // hide collapse grid button
+        $("a.ui-jqgrid-titlebar-close").hide();
+      });
+      
+      $(function () {
+      	var step1GridHeight = _bd.util.detectHeight('window', 118),
+            step1GridWidth = _bd.util.detectWidth('.bdg-content', 0);
+        
+        // adjust sidebar container size
+        _bd.util.adjustSize('#bdg-step1-sizing', step1GridHeight, step1GridWidth * 0.8);
+        $(window).on('resize', function () {
+          var width = _bd.util.detectWidth('.bdg-content', 0);
+        	_bd.util.adjustSize('#bdg-step1-sizing', _bd.util.detectHeight('window', 118), width * 0.8);
+        });
+
+        // init event registration
+        _bd.designer.registerEvents();
+        
+        _bd.designer.step2();
+        _bd.designer.step3();
+//        _bd.designer.step4();
+
+      });
+    </script>
+  </head>
+  
+  <body ng-controller="bdgDesignerCtrl">
+  	<!-- Sidebar and Content -->
+    <div class="bdg-main" ng-controller="bdgRefaceCtrl">
+      <div class="navbar navbar-inverse navbar-toolbar">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <a href="/erp/ds/dsjsp00" title="回首頁">
+              <img alt="" class="icsc-brand" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOQAAADkCAYAAACIV4iNAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyRpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoTWFjaW50b3NoKSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDpCNjQyRUFDMTNCRDExMUU0OTA5QkFDMTQ2REM4M0I1MiIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDpCNjQyRUFDMjNCRDExMUU0OTA5QkFDMTQ2REM4M0I1MiI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkI2NDJFQUJGM0JEMTExRTQ5MDlCQUMxNDZEQzgzQjUyIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOkI2NDJFQUMwM0JEMTExRTQ5MDlCQUMxNDZEQzgzQjUyIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+DJhg7wAAIw1JREFUeNrsXQm0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" />
+            </a>
+            <a class="navbar-brand">PASS: BDG</a>
+            <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+          </div>
+          <div class="navbar-collapse collapse" id="navbar-main">
+            <ul class="nav navbar-nav">
+              <li class="active"><a href="#">資訊項設計</a></li>
+            </ul>
+            <ul class="nav navbar-nav">
+              <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="bdg-info-manage">資訊項管理 <span class="caret"></span></a>
+                <ul class="dropdown-menu" aria-labelledby="bdg-info-manage">
+                  <li><a href="#" onclick="_bd.reface.queryInfo()">查詢資訊項</a></li>
+                  <li><a href="#" onclick="_bd.reface.openSaveInfo()">儲存資訊項</a></li>
+                  <li><a href="#" onclick="_bd.reface.newInfo()">開新資訊項</a></li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="bdg-content container-fluid">
+        <ul class="nav nav-tabs nav-tabs-google">
+          <li class="active"><a href="#bdg-basic" data-toggle="tab">圖型設定</a></li>
+          <!--<li id="bdg-axes-tab" class="bdg-temp-save" ng-show="lineProcess.active">-->
+          <li id="bdg-axes-tab" class="bdg-temp-save">
+            <a href="#bdg-axes-a" data-toggle="tab" onclick="setTimeout(function() {_bd.designer.inAxes();}, 0);">資料設定</a>
+          </li>
+          <!--<li class="bdg-temp-save" ng-show="statProcess.active"><a href="#bdg-sample-a" data-toggle="tab">樣本設定</a></li>-->
+          <li class="bdg-temp-save" ng-show="lineProcess.active"><a href="#bdg-lc-a" data-toggle="tab" onclick="setTimeout(function() {_bd.designer.inLc();}, 0);">限制條件</a></li>
+          <li class="bdg-temp-save" ng-show=""><a href="#bdg-stat-a" data-toggle="tab">計量分析</a></li>
+        </ul>
+        <!-- Step1 -->
+        <div id="bdg-store" class="tab-content">
+          <div id="bdg-basic" class="tab-pane active">
+            <nav class="navbar navbar-toolbar" role="navigation">
+              <div class="container-fluid">
+                <div class="collapse navbar-collapse">
+                  <form class="navbar-form navbar-left" role="search">
+                    <label class="control-label">圖型種類 <sup>*</sup>：</label>
+                    <label id="bdg-chart-type" class="control-label bdg-prop-value">{{chartType}}</label>
+                    <label class="control-label">圖型標題 <sup>*</sup>：</label>
+                    <div class="form-group">
+                      <input id="bdg-chart-title" type="text" class="form-control" placeholder="請輸入標題名稱">
+                    </div>
+                    <label class="control-label">寬高比例：</label>
+                    <label id="bdg-chart-size" class="control-label bdg-prop-value"></label>
+                    <button class="btn btn-default" onclick="_bd.designer.reSizing();">重設寬高</button>
+                  </form>
+                </div>
+              </div>
+            </nav>
+            <div id="bdg-basic-left">
+              <div id="bdg-chart-type-list">
+                <div class="table-responsive">
+                  <table id="bdg-chart-type-table" class="table table-hover table-bordered table-condensed">
+                    <tbody>
+                      <tr ng-click="setChartType('Line')">
+                        <td>
+                          <div style="font-size: 15px;text-align: center;background-color: #d7ebf9;">折線圖</div>
+                          <img src="res/images/bdg-line-550.png" class="img-responsive" title="可轉換為長條圖">
+                        </td>
+                      </tr>
+                      <tr ng-click="setChartType('Statistic')">
+                        <td>
+                          <div style="font-size: 15px;text-align: center;background-color: #d7ebf9;">計量統計圖表</div>
+                          <img src="res/images/bdg-stat-small.png" class="img-responsive" title="提供計數分佈圖、以及相關統計數據...等">
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <div id="bdg-design-chart-content">
+              <div id="bdg-step1-sizing">
+                <div is="jqgrid" id="bdg-chart-sizing-grid" autofit="true" headervisible="false" checkbox="false" page="false" stripe="false">
+                  <div is="jqcol" name="c1" label="1" sortable="false"></div>
+                  <div is="jqcol" name="c2" label="2" sortable="false"></div>
+                  <div is="jqcol" name="c3" label="3" sortable="false"></div>
+                  <div is="jqcol" name="c4" label="4" sortable="false"></div>
+                  <div is="jqcol" name="c5" label="5" sortable="false"></div>
+                  <div is="jqcol" name="c6" label="6" sortable="false"></div>
+                  <div is="jqcol" name="c7" label="7" sortable="false"></div>
+                  <div is="jqcol" name="c8" label="8" sortable="false"></div>
+                  <div is="jqcol" name="c9" label="9" sortable="false"></div>
+                  <div is="jqcol" name="c10" label="10" sortable="false"></div>
+                  <div is="jqcol" name="c11" label="11" sortable="false"></div>
+                  <div is="jqcol" name="c12" label="12" sortable="false"></div>
+                  <div is="jqcol" name="c13" label="13" sortable="false"></div>
+                  <div is="jqcol" name="c14" label="14" sortable="false"></div>
+                  <div is="jqcol" name="c15" label="15" sortable="false"></div>
+                  <div is="jqcol" name="c16" label="16" sortable="false"></div>
+                  <div is="jqcol" name="c17" label="17" sortable="false"></div>
+                  <div is="jqcol" name="c18" label="18" sortable="false"></div>
+                  <div is="jqcol" name="c19" label="19" sortable="false"></div>
+                  <div is="jqcol" name="c20" label="20" sortable="false"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- 軸線設定 -->
+          <div id="bdg-axes-a" class="tab-pane">
+            <nav class="navbar navbar-toolbar" role="navigation">
+              <div class="container-fluid">
+                <div class="btn-toolbar" role="toolbar">
+                  <div class="btn-group">
+                    <button class="btn btn-default" onclick="_bd.aq.showCommonData(this, '_bd.designer.dataSrc', 'ddTable', true)">資料表</button>
+                    <button class="btn btn-default bdg-step2-func-btn disabled" onclick="_bd.designer.pickRel(this)">關聯表</button>
+                  </div>
+                  <div class="btn-group">
+                    <button id="bdg-step2-make-col-num" class="btn btn-default bdg-step2-func-btn disabled" onclick="_bd.designer.makeNumCol()">自定義欄位(數值型)</button>
+                    <button id="bdg-step2-make-col-str" class="btn btn-default bdg-step2-func-btn disabled" onclick="_bd.designer.makeStrCol()">自定義欄位(字串型)</button>
+                  </div>
+                  <div class="btn-group">
+                    <button class="btn btn-default bdg-step2-func-btn disabled" onclick="_bd.designer.setEssential()">設定必要條件</button>
+                  </div>
+                  <div class="btn-group">
+                    <button class="btn btn-default bdg-step2-func-btn disabled" onclick="_bd.designer.sqlPrev()">SQL預覽</button>
+                  </div>
+                  <div class="btn-group">
+                    <button id="bdg-data-prev-btn" class="btn btn-success disabled" onclick="_bd.designer.dataPrev()">資料預覽</button>
+                  </div>
+                  <!--<button class="btn btn-warning" data-animation="am-fade-and-scale" data-placement="center" bs-modal="modal">存檔T</button>-->
+                </div>
+              </div>
+            </nav>
+            <div id="bdg-axes-setup">
+              <div id="bdg-axes-setup-src">
+                <div is="jqgrid" id="bdg-axes-setup-src-grid" heading="欄位選擇清單" autofit="true" checkbox="false" stripe="false" filtertoolbar="true" onaftersearch="_bd.designer.paintSubTable()" roweditor="true">
+                  <div is="jqcol" name="table" label="表格"></div>
+                  <div is="jqcol" name="colId" label="欄位ID"></div>
+                  <div is="jqcol" name="colName" label="欄位名稱"></div>
+                  <div is="jqcol" name="dataType" label="資料型態" width="70"></div>
+                  <div is="jqcol" name="dataSize" label="資料長度" width="40"></div>
+                  <div is="jqcol" name="axis" type="select" label="軸線設定" width="60" sortable="false" search="false" value="0:請選擇;X:X;YL:Y(左側);YR:Y(右側);S:系列" editable="true" onchange="_bd.designer.setAxisInfo()"></div>
+                  <div is="jqcol" name="formula" label="自定義公式" sortable="false" search="false"></div>
+                  <div is="jqcol" name="dataUnit" label="單位" hidden="true"></div>
+                  <div is="jqcol" name="dataFormat" label="格式" hidden="true"></div>
+                </div>
+              </div>
+              <div id="bdg-axes-setup-tar">
+                <div is="jqgrid" id="bdg-axes-setup-tar-grid" heading="選定軸線清單" autofit="true" checkbox="false" stripe="false" page="false" roweditor="true">
+                  <div is="jqcol" name="table" label="表格" sortable="false"></div>
+                  <div is="jqcol" name="colId" label="欄位ID" sortable="false"></div>
+                  <div is="jqcol" name="colName" label="欄位名稱" sortable="false" editable="true"></div>
+                  <div is="jqcol" name="dataUnit" label="資料單位" sortable="false" editable="true"></div>
+                  <div is="jqcol" name="dataFormat" label="資料格式" sortable="false" editable="true"></div>
+                  <div is="jqcol" name="axis" label="軸線" sortable="false"></div>
+                  <div is="jqcol" name="func" type="select" label="功能函式" sortable="false" value=":;sum:SUM;avg:AVG;min:MIN;max:MAX" editable="true" onchange="_bd.reface.setAxisFunc()"></div>
+                  <div is="jqcol" name="del" type="button" label="移除" width="60" sortable="false" onclick="_bd.designer.delAxis(this)"></div>
+                  <div is="jqcol" name="dataType" label="資料型態" sortable="false" hidden="true"></div>
+                  <div is="jqcol" name="dataSize" label="資料長度" sortable="false" hidden="true"></div>
+                  <div is="jqcol" name="formula" label="自定義公式" sortable="false" hidden="true"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- 限制條件 -->
+          <div id="bdg-lc-a" class="tab-pane">
+            <nav class="navbar navbar-toolbar" role="navigation">
+              <div class="container-fluid">
+                <div class="btn-toolbar" role="toolbar">
+                  <div class="btn-group">
+                    <button class="btn btn-default" onclick="_bd.reface.limitColInit()">重設限制條件</button>
+                  </div>
+                  <div class="btn-group">
+                    <button id="bdg-adv-query-btn" class="btn btn-default" onclick="_bd.aq.setAdvQuery()" disabled>進階查詢</button>
+                  </div>
+                  <div class="btn-group">
+                    <button id="bdg-adv-chart-prev" class="btn btn-success" onclick="_bd.designer.advChartPrev()">圖型預覽</button>
+                  </div>
+                </div>
+              </div>
+            </nav>
+            <div id="bdg-lc-src">
+              <div is="jqgrid" id="bdg-lc-src-grid" heading="欄位選擇清單：請點選設定限制條件欄位" onrow="_bd.reface.pickLimitCol()" filtertoolbar="true" checkbox="false" stripe="false" autofit="true" page="false">
+                <div is="jqcol" name="table" label="表格"></div>
+                <div is="jqcol" name="colId" label="欄位ID"></div>
+                <div is="jqcol" name="colName" label="欄位名稱"></div>
+                <div is="jqcol" name="formula" label="自定義公式" sortable="false" search="false"></div>
+                <div is="jqcol" name="axis" label="軸線" sortable="false" search="false" hidden="true"></div>
+                <div is="jqcol" name="func" label="功能函式" sortable="false" search="false" hidden="true"></div>
+              </div>
+            </div>
+            <div id="bdg-lc-tar">
+              <div is="jqgrid" id="bdg-lc-tar-grid" heading="限制條件欄位清單" headervisible="false" checkbox="false" stripe="false" autofit="true" page="false" roweditor="true">
+                <div is="jqcol" name="isUK" index="isUK" type="select" label="欄位設定" width="70" sortable="false" value="1:1-鍵值;2:2-過濾欄位;3:3-顯示" editable="true"></div>
+                <div is="jqcol" name="table" label="表格" sortable="false"></div>
+                <div is="jqcol" name="colId" label="欄位ID" sortable="true"></div>
+                <div is="jqcol" name="colName" label="欄位名稱" sortable="false"></div>
+                <div is="jqcol" name="inputType" label="輸入類別" sortable="false"></div>
+                <div is="jqcol" name="assist" type="button" label="輔助輸入" width="80" sortable="false" editable="true" onclick="_bd.aq.openAI(this)"></div>
+                <div is="jqcol" name="del" type="button" label="移除" width="60" sortable="false" onclick="_bd.reface.throwLimitCol(this)"></div>
+                <div is="jqcol" name="axis" label="軸線" sortable="false" hidden="true"></div>
+                <div is="jqcol" name="func" label="功能函式" sortable="false" hidden="true"></div>
+                <div is="jqcol" name="formula" label="自定義公式" sortable="false" hidden="true"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div id="bdg-step1-check-modal" class="modal fade">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+              <h4 class="modal-title">圖型設定檢查</h4>
+            </div>
+            <div class="modal-body">
+              <h3>請輸入<sup>*</sup>必填欄位！</h3>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Query Info -->
+      <div id="bdg-query-info-dialog" title="查詢資訊項" style="display:none;">
+        <!--<nav class="navbar navbar-toolbar" role="navigation">-->
+          <!--<div class="container-fluid">-->
+            <!--<form class="navbar-form navbar-left" role="search">-->
+              <!--<label>圖型種類 <sup>*</sup>：</label>-->
+              <!--<select id="bdg-query-info-search-type" class="selectpicker">-->
+                <!--<option>Line</option>-->
+                <!--<option>Pie</option>-->
+                <!--<option>XY Point</option>-->
+                <!--<option>Bar and Line</option>-->
+                <!--<option>Bar</option>-->
+                <!--<option>Horiz. Bar</option>-->
+                <!--<option>Stacked</option>-->
+                <!--<option>Gauge</option>-->
+              <!--</select>-->
+            <!--</form>-->
+          <!--</div>-->
+        <!--</nav>-->
+        <nav class="navbar navbar-toolbar" role="navigation">
+          <div class="container-fluid">
+            <form class="navbar-form navbar-left" role="search">
+              <div class="btn-toolbar" role="toolbar">
+                <label>圖型標題：</label>
+                <div class="form-group">
+                  <input id="bdg-query-info-search-title" type="text" class="form-control" placeholder="請輸入標題名稱">
+                </div>
+                <button id="bdg-query-info-query-title" class="btn btn-default" onclick="_bd.reface.doQueryInfoByTitle()">查詢</button>
+              </div>
+            </form>
+          </div>
+        </nav>
+        <nav class="navbar navbar-toolbar" role="navigation">
+          <div class="container-fluid">
+            <form class="navbar-form navbar-left" role="search">
+              <label>領域：</label>
+              <button id="bdg-query-info-search-domain" type="button" class="btn btn-default" ng-model="domainOpts.selected" data-html="1" ng-options="opt.value as opt.label for opt in domainOpts.opts" bs-select>
+                Action <span class="caret"></span>
+              </button>
+              <label>關鍵字：</label>
+              <button id="bdg-query-info-search-keyword" type="button" class="btn btn-default" ng-model="keywordOpts.selected" data-html="1" ng-options="opt.value as opt.label for opt in keywordOpts.opts" bs-select>
+                Action <span class="caret"></span>
+              </button>
+              <button id="bdg-query-info-query-keyword" class="btn btn-default" onclick="">查詢</button>
+            </form>
+          </div>
+        </nav>
+        <div id="bdg-query-info-list">
+          <div is="jqgrid" id="bdg-query-info-grid" gridview="true" heading="資訊項清單" stripe="false" autofit="true" ondblclick="_bd.reface.reface(false)" filtertoolbar="true" checkbox="false" page="false">
+            <div is="jqcol" type="label" name="INFOID" label="資訊項ID" width="180"></div>
+            <div is="jqcol" type="label" name="CHARTTYPE" label="圖型種類"></div>
+            <div is="jqcol" type="label" name="CHARTTITLE" label="圖型標題"></div>
+            <div is="jqcol" type="label" name="CHARTSIZE" label="寬高比例"></div>
+            <!--<div is="jqcol" type="label" name="CREATEEMP" label="建立者"></div>-->
+            <div is="jqcol" type="label" name="UPDATEEMP" label="最後更新者"></div>
+            <div is="jqcol" type="label" name="DATE" label="更新日期"></div>
+            <div is="jqcol" type="label" name="TIME" label="更新時間"></div>
+            <div is="jqcol" type="button" name="REMOVE" label="刪除" width="60" sortable="false" onclick="_bd.designer.removeInfo(this)"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pick Table -->
+      <div id="bdg-data-src-dialog" title="選擇表格" style="display:none;">
+        <div id="bdg-data-src-tabs">
+          <ul>
+            <li><a href="#bdg-data-src-search">搜尋表格</a></li>
+            <li><a href="#bdg-data-src-sql">自組SQL</a></li>
+          </ul>
+          <div id="bdg-data-src-search">
+            <nav class="navbar navbar-default">
+              <div class="navbar-form navbar-left">
+                <label>領域：</label>
+                <button type="button" class="btn btn-default" ng-model="domainOpts.selected" data-html="1" ng-options="opt.value as opt.label for opt in domainOpts.opts" bs-select>
+                  Action <span class="caret"></span>
+                </button>
+                <label>關鍵字：</label>
+                <button type="button" class="btn btn-default" ng-model="keywordOpts.selected" data-html="1" ng-options="opt.value as opt.label for opt in keywordOpts.opts" bs-select>
+                  Action <span class="caret"></span>
+                </button>
+                <button class="btn btn-default" onclick="_bd.designer.queryTables()">查詢</button>
+              </div>
+            </nav>
+            <div>
+              <div is="jqgrid" id="bdg-data-src-table-grid" ondblclickrow="_bd.reface.decideMainTable()" gridview="true" heading="表格清單" stripe="false" autofit="true" checkbox="false" page="false">
+                <div is="jqcol" type="label" name="TABLEID" label="表格ID"></div>
+                <div is="jqcol" type="label" name="TABLENAME" label="表格名稱"></div>
+              </div>
+            </div>
+          </div>
+          <div id="bdg-data-src-sql">
+            <textarea class="form-control" placeholder="請輸入完整之SQL SELECT命令" style="height:340px;"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!--Pick Relation-->
+      <div id="bdg-pick-relation-dialog" title="選擇關聯表格" style="display:none;">
+        <div id="bdg-pick-relation-list">
+          <div is="jqgrid" id="bdg-pick-relation-grid" gridview="true" heading="關聯表格清單" onrow="_bd.reface.addSubTable()" filtertoolbar="true" stripe="false" autofit="true" checkbox="false" page="false">
+            <div is="jqcol" type="label" name="tarTable" label="表格ID"></div>
+            <!--<div is="jqcol" type="label" name="tableName" label="表格名稱"></div>-->
+            <div is="jqcol" type="label" name="srcColumns" label="關聯欄位(主檔)"></div>
+            <div is="jqcol" type="label" name="joinType" label="關聯方式" width="80"></div>
+            <div is="jqcol" type="label" name="tarColumns" label="關聯欄位(副檔)"></div>
+          </div>
+        </div>
+      </div>
+
+      <!--Make Column For Number-->
+      <div id="bdg-step2-make-col-dialog" title="自定義欄位(數值型)" style="display:none;">
+        <div id="bdg-step2-make-col-list">
+          <div is="jqgrid" id="bdg-step2-make-col-grid" onrow="_bd.designer.makeNumColAct('col')" gridview="true" heading="欄位選擇器" filtertoolbar="true" stripe="false" autofit="true" checkbox="false" page="false">
+            <div is="jqcol" name="table" label="表格"></div>
+            <div is="jqcol" name="colId" label="欄位ID"></div>
+            <div is="jqcol" name="colName" label="欄位名稱"></div>
+            <div is="jqcol" name="dataType" label="資料型態"></div>
+            <div is="jqcol" name="dataSize" label="資料長度"></div>
+            <div is="jqcol" name="baseUnit" label="單位" hidden="true"></div>
+            <div is="jqcol" name="baseFormat" label="格式" hidden="true"></div>
+          </div>
+        </div>
+        <nav class="navbar navbar-toolbar" role="navigation">
+          <div class="container-fluid">
+            <div class="collapse navbar-collapse">
+              <form class="navbar-form" role="search">
+                <div class="form-group">
+                  <label class="control-label">運算子與函數：</label>
+                  <button id="bdg-step2-make-col-plus" class="btn btn-default bdg-operator" onclick="_bd.designer.makeNumColAct('op', '+')">＋</button>
+                  <button id="bdg-step2-make-col-minus" class="btn btn-default bdg-operator" onclick="_bd.designer.makeNumColAct('op', '-')">－</button>
+                  <button id="bdg-step2-make-col-multiple" class="btn btn-default bdg-operator" onclick="_bd.designer.makeNumColAct('op', '*')">×</button>
+                  <button id="bdg-step2-make-col-divide" class="btn btn-default bdg-operator" onclick="_bd.designer.makeNumColAct('op', '/')">/</button>
+                  <button id="bdg-step2-make-col-power" class="btn btn-default bdg-operator" onclick="_bd.designer.makeNumColAct('op', '^')">^</button>
+                  <button id="bdg-step2-make-col-sum" class="btn btn-default" onclick="_bd.designer.makeNumColAct('func', 'SUM')">SUM</button>
+                  <button id="bdg-step2-make-col-avg" class="btn btn-default" onclick="_bd.designer.makeNumColAct('func', 'AVG')">AVG</button>
+                  <button id="bdg-step2-make-col-min" class="btn btn-default" onclick="_bd.designer.makeNumColAct('func', 'MIN')">MIN</button>
+                  <button id="bdg-step2-make-col-max" class="btn btn-default" onclick="_bd.designer.makeNumColAct('func', 'MAX')">MAX</button>
+                  <button id="bdg-step2-make-col-count" class="btn btn-default" onclick="_bd.designer.makeNumColAct('count')">COUNT</button>
+                </div>
+                <div class="form-group">
+                  <label class="control-label">數字器：</label>
+                  <div class="form-group">
+                    <input id="bdg-step2-make-col-selector-input" type="number" class="form-control bdg-make-num-col" placeholder="請輸入數字" onkeypress="_bd.util.validateNum()">
+                  </div>
+                  <button id="bdg-step2-make-col-selector-from-input" class="btn btn-default" onclick="_bd.designer.makeNumColAct('input')">數字填入運算元</button>
+                  <label class="bdg-waring-msg" id="bdg-step2-make-col-msg"></label>
+                </div>
+                <br>
+                <div class="form-group">
+                  <div class="form-group">
+                    <textarea id="bdg-step2-make-col-sub-formula" class="bdg-make-num-col bdg-formula-zone" placeholder="子公式說明：完成後，按確定可置入子公式暫存區，或按總公式達成總公式輸入。" rows="2" disabled></textarea>
+                  </div>
+                  <button id="bdg-step2-make-col-reset-sub" class="btn btn-default" onclick="_bd.designer.makeNumColAct('resetSub')">清除</button>
+                  <button id="bdg-step2-make-col-set-sub" class="btn btn-default" onclick="_bd.designer.makeNumColAct('addSub')">確定</button>
+                  <button id="bdg-step2-make-col-set-final" class="btn btn-default" onclick="_bd.designer.makeNumColAct('final')">總公式</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        <div id="bdg-step2-make-col-sub-formula-list">
+          <div is="jqgrid" id="bdg-step2-make-col-sub-formula-grid" onrow="_bd.designer.makeNumColAct('sub')" gridview="true" headervisible="false" heading="子公式暫存區" autofit="true" checkbox="false" page="false" pagesize="20" pagesizelist="10,20,30,40">
+            <div is="jqcol" name="formula" label="子公式選擇器" sortable="false"></div>
+          </div>
+        </div>
+        <nav class="navbar navbar-toolbar" role="navigation">
+          <div class="container-fluid">
+            <div class="collapse navbar-collapse">
+              <form class="navbar-form" role="search">
+                <div class="form-group">
+                  <div class="form-group">
+                    <textarea id="bdg-step2-make-col-final" class="bdg-make-num-col bdg-formula-zone" placeholder="總公式說明：請依序選擇運算元與運算子，完成單個子公式，再組合子公式或欄位，達成您所需的總公式。" rows="3" disabled></textarea>
+                  </div>
+                  <button id="bdg-step2-make-col-reset-final" class="btn btn-default" onclick="_bd.designer.makeNumColAct('resetFinal')">清除</button>
+                </div>
+                <div class="form-group">
+                  <label>ID <sup>*</sup>：</label>
+                  <div class="form-group">
+                    <input id="bdg-make-num-col-id" type="text" class="form-control bdg-make-num-col" placeholder="請設定欄位ID">
+                  </div>
+                  <label>名稱 <sup>*</sup>：</label>
+                  <div class="form-group">
+                    <input id="bdg-make-num-col-name" type="text" class="form-control bdg-make-num-col" placeholder="請設定欄位名稱">
+                  </div>
+                  <label>單位：</label>
+                  <div class="form-group">
+                    <input id="bdg-make-num-col-unit" type="text" class="form-control bdg-make-num-col" placeholder="請設定欄位單位">
+                  </div>
+                  <button id="bdg-step2-make-col-confirm" class="btn btn-default" onclick="_bd.designer.makeNumColAct('add')">新增欄位</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+      </div>
+
+      <!--Make Column For String-->
+      <div id="bdg-step2-make-str-col-dialog" title="自定義欄位(字串型)" style="display:none;">
+        <div id="bdg-step2-make-str-col-list">
+          <div is="jqgrid" id="bdg-step2-make-str-col-grid" onrow="_bd.designer.makeStrColAct('col')" gridview="true" heading="欄位選擇器" filtertoolbar="true" stripe="false" autofit="true" checkbox="false" page="false">
+            <div is="jqcol" name="table" label="表格"></div>
+            <div is="jqcol" name="colId" label="欄位ID"></div>
+            <div is="jqcol" name="colName" label="欄位名稱"></div>
+            <div is="jqcol" name="dataType" label="資料型態"></div>
+            <div is="jqcol" name="dataSize" label="資料長度"></div>
+            <div is="jqcol" name="baseUnit" label="單位" hidden="true"></div>
+            <div is="jqcol" name="baseFormat" label="格式" hidden="true"></div>
+          </div>
+        </div>
+        <nav class="navbar navbar-toolbar" role="navigation">
+          <div class="container-fluid">
+            <div class="collapse navbar-collapse">
+              <form class="navbar-form" role="search">
+                <div class="form-group">
+                  <label>起始位置：</label>
+                  <div class="form-group">
+                    <input id="bdg-step2-make-str-col-pos" type="text" class="form-control bdg-make-str-col" placeholder="由1開始" onkeypress="_bd.util.validateNum()" onkeyup="_bd.designer.makeStrColAct('pos')">
+                  </div>
+                  <label>長度：</label>
+                  <div class="form-group">
+                    <input id="bdg-step2-make-str-col-length" type="text" class="form-control bdg-make-str-col" placeholder="欲擷取字串長度" onkeypress="_bd.util.validateNum()" onkeyup="_bd.designer.makeStrColAct('length')">
+                  </div>
+                  <label class="bdg-waring-msg" id="bdg-step2-make-str-col-msg"></label>
+                  <!--<button id="bdg-step2-make-str-col-count" class="btn btn-default" onclick="_bd.designer.makeStrColAct('count')" title="新增計數欄位">COUNT</button>-->
+                  <div class="form-group">
+                    <textarea id="bdg-step2-make-str-col-sub-formula" class="bdg-make-str-col bdg-formula-zone" placeholder="欄位字串處理說明：請設定欄位字串處理方法，完成後，按確定即存入組合公式。" rows="1" disabled></textarea>
+                  </div>
+                  <button id="bdg-step2-make-str-col-reset-sub" class="btn btn-default" onclick="_bd.designer.makeStrColAct('resetSub')">清除</button>
+                  <button id="bdg-step2-make-str-col-set-sub" class="btn btn-default" onclick="_bd.designer.makeStrColAct('subConfirm')">確定</button>
+                </div>
+                <div class="form-group">
+                  <div class="form-group">
+                    <textarea id="bdg-step2-make-str-col-final" class="bdg-make-str-col bdg-formula-zone" placeholder="組合公式說明：此乃經欄位字串處理過後的各欄位的聯結字串。" rows="2" disabled></textarea>
+                  </div>
+                  <button id="bdg-step2-make-str-col-reset-final" class="btn btn-default" onclick="_bd.designer.makeStrColAct('resetFinal')">清除</button>
+                </div>
+                <div class="form-group">
+                  <label>ID <sup>*</sup>：</label>
+                  <div class="form-group">
+                    <input id="bdg-make-str-col-id" type="text" class="form-control bdg-make-str-col" placeholder="請設定欄位ID">
+                  </div>
+                  <label>名稱 <sup>*</sup>：</label>
+                  <div class="form-group">
+                    <input id="bdg-make-str-col-name" type="text" class="form-control bdg-make-str-col" placeholder="請設定欄位名稱">
+                  </div>
+                  <label>單位：</label>
+                  <div class="form-group">
+                    <input id="bdg-make-str-col-unit" type="text" class="form-control bdg-make-str-col" placeholder="請設定欄位單位">
+                  </div>
+                  <button id="bdg-step2-make-str-col-confirm" class="btn btn-default" onclick="_bd.designer.makeStrColAct('add')">新增欄位</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+      </div>
+
+      <!-- Set Essential Column -->
+      <div id="bdg-essential-col-dialog" title="設定必要條件(將加入資料與圖型預覽，並成為最終圖表之過濾條件)" style="display:none;">
+        <div id="bdg-essential-col-list">
+          <div is="jqgrid" id="bdg-essential-col-grid" onrow="_bd.designer.setEssentialAct('col')" gridview="true" heading="欄位選擇器" filtertoolbar="true" stripe="false" autofit="true" checkbox="false" page="false">
+            <div is="jqcol" name="table" label="表格"></div>
+            <div is="jqcol" name="colId" label="欄位ID"></div>
+            <div is="jqcol" name="colName" label="欄位名稱"></div>
+            <div is="jqcol" name="dataType" label="資料型態"></div>
+            <div is="jqcol" name="dataSize" label="資料長度"></div>
+            <div is="jqcol" name="formula" label="公式" hidden="true"></div>
+            <div is="jqcol" name="baseUnit" label="單位" hidden="true"></div>
+            <div is="jqcol" name="baseFormat" label="格式" hidden="true"></div>
+          </div>
+        </div>
+        <nav class="navbar navbar-toolbar" role="navigation">
+          <div class="container-fluid">
+            <div class="collapse navbar-collapse">
+              <form class="navbar-form" role="search">
+                <div class="form-group">
+                  <label>運算子：</label>
+                  <button id="bdg-essential-col-gt" class="btn btn-default bdg-operator" onclick="_bd.designer.setEssentialAct('op', '>')">&gt;</button>
+                  <button id="bdg-essential-col-lt" class="btn btn-default bdg-operator" onclick="_bd.designer.setEssentialAct('op', '<')">&lt;</button>
+                  <button id="bdg-essential-col-and" class="btn btn-default bdg-operator" onclick="_bd.designer.setEssentialAct('op', '>=')">&gt;=</button>
+                  <button id="bdg-essential-col-or" class="btn btn-default bdg-operator" onclick="_bd.designer.setEssentialAct('op', '<=')">&lt;=</button>
+                  <button id="bdg-essential-col-e" class="btn btn-default bdg-operator" onclick="_bd.designer.setEssentialAct('op', '=')">=</button>
+                  <button id="bdg-essential-col-ne" class="btn btn-default bdg-operator" onclick="_bd.designer.setEssentialAct('op', '!=')">!=</button>
+                  <button id="bdg-essential-col-like" class="btn btn-default bdg-operator" onclick="_bd.designer.setEssentialAct('op', 'like')">like</button>
+                  <button id="bdg-essential-col-in" class="btn btn-default bdg-operator" onclick="_bd.designer.setEssentialAct('op', 'in')">in</button>
+                  <label>特殊：</label>
+                  <button id="bdg-essential-col-nn" class="btn btn-default" onclick="_bd.designer.setEssentialAct('op', 'IS NOT NULL')">IS NOT NULL</button>
+                  <label class="bdg-waring-msg" id="bdg-essential-col-msg"></label>
+                </div>
+                <div class="form-group">
+                  <label>輸入器：</label>
+                  <div class="form-group">
+                    <input id="bdg-essential-col-input" type="text" class="form-control" placeholder="請輸入運算元內容，in的右運算元內容請以','隔開">
+                  </div>
+                  <button id="bdg-essential-col-input-btn" class="btn btn-default" onclick="_bd.designer.setEssentialAct('input')">填入運算元</button>
+                </div>
+                <div class="form-group">
+                  <div class="form-group">
+                    <textarea id="bdg-essential-col-rule" placeholder="單一規則說明：單一規則之各條件以AND串聯，完成後，按確定可置入規則清單。" rows="4"></textarea>
+                  </div>
+                  <button id="bdg-essential-col-reset-rule" class="btn btn-default" onclick="_bd.designer.setEssentialAct('resetRule')">清除</button>
+                  <button id="bdg-essential-col-add-rule" class="btn btn-default" onclick="_bd.designer.setEssentialAct('addRule')">確定</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        <div id="bdg-essential-col-rule-list">
+          <div is="jqgrid" id="bdg-essential-col-rule-grid" gridview="true" headervisible="false" heading="規則清單(規則間以OR串聯)" stripe="false" autofit="true" checkbox="false" page="false">
+            <div is="jqcol" name="rule" label="規則清單(規則間以OR串聯)" sortable="false"></div>
+            <div is="jqcol" name="abc" type="button" label="移除" sortable="false" width="20" onclick="_bd.designer.setEssentialAct(this)"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stat Setup -->
+      <div id="bdg-stat-setup-dialog" title="參數設定" style="display:none;">
+        <form class="form-horizontal" role="form">
+          <div class="form-group">
+            <label for="bdg-stat-setup-ul" class="col-sm-2 control-label">下限(LL)</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="bdg-stat-setup-ul" ng-model="statProcess.ll" placeholder="請輸入管制量下限">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="bdg-stat-setup-ll" class="col-sm-2 control-label">上限(UL)</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="bdg-stat-setup-ll" ng-model="statProcess.ul" placeholder="請輸入管制量上限">
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- Data View -->
+      <div id="bdg-data-view-dialog" title="{{dataViewDialogTitle}}" style="display:none;">
+        <div ng-show="statProcess.active">
+          <nav class="navbar navbar-toolbar" role="navigation">
+            <div class="container-fluid">
+              <button class="btn btn-default" ng-click="statSetup($event)">參數設定</button>
+              <button class="btn btn-default" ng-click="statDataPrev()">{{statProcess.dataBtnLabel}}</button>
+            </div>
+          </nav>
+          <table class="table table-bordered table-responsive" ng-show="statProcess.showStatTable">
+            <tr>
+              <td>最小值：{{statMin}}</td>
+              <td>平均數：{{statMean}}</td>
+              <td>全距：{{statRange}}</td>
+              <td>中位數：{{statMedian}}</td>
+            </tr>
+            <tr>
+              <td>最大值：{{statMax}}</td>
+              <td>標準差：{{statStdev}}</td>
+              <td>變異數：{{statVariance}}</td>
+              <td>Mju：{{statMju}}</td>
+            </tr>
+            <tr>
+              <td>PP：{{statPP}}</td>
+              <td>PPK：{{statPPK}}</td>
+              <td>Ca：{{statCa}}</td>
+              <td>T：{{statT}}</td>
+            </tr>
+          </table>
+        </div>
+        <div ng-show="lineProcess.active">
+          <nav class="navbar navbar-toolbar" role="navigation">
+            <div class="container-fluid">
+              <div class="btn-toolbar" role="toolbar">
+                <!--<button id="bdg-step2-data-extract" class="btn btn-default" onclick="_bd.designer.dataExtract()">資料過濾</button>-->
+                <button id="bdg-step2-data-order" class="btn btn-default" onclick="_bd.designer.setDataOrder()">資料排序</button>
+                <button id="bdg-step2-chart-data-view" class="btn btn-success" onclick="_bd.designer.turnChartDataView()">圖型預覽</button>
+              </div>
+            </div>
+          </nav>
+        </div>
+        <div id="bdg-data-view" class="table-responsive">
+          <table id="bdg-step2-data-view-table" class="table table-hover table-bordered table-condensed"></table>
+        </div>
+        <div id="bdg-chart-view" style="display: none;">
+          <canvas id="bdg-chart-view-canvas" width="912" height="450"></canvas>
+        </div>
+      </div>
+
+      <!-- Data Extract -->
+      <div id="bdg-step2-data-extract-dialog" title="資料過濾測試(僅供資料集尋找測試，若想存成圖表過濾條件，請將規則設至必要條件)" style="display:none;">
+        <div id="bdg-step2-data-extract-list">
+          <div is="jqgrid" id="bdg-step2-data-extract-grid" onrow="_bd.designer.dataExtractAct('col')" gridview="true" heading="欄位選擇器" filtertoolbar="true" stripe="false" autofit="true" checkbox="false" page="false">
+            <div is="jqcol" name="table" label="表格"></div>
+            <div is="jqcol" name="colId" label="欄位ID"></div>
+            <div is="jqcol" name="colName" label="欄位名稱"></div>
+            <div is="jqcol" name="dataType" label="資料型態"></div>
+            <div is="jqcol" name="dataSize" label="資料長度"></div>
+            <div is="jqcol" name="baseUnit" label="單位" hidden="true"></div>
+            <div is="jqcol" name="baseFormat" label="格式" hidden="true"></div>
+          </div>
+        </div>
+        <nav class="navbar navbar-default">
+          <div class="navbar-form navbar-left">
+            <label>運算子：</label>
+            <button id="bdg-step2-data-extract-gt" class="btn btn-default bdg-operator" onclick="_bd.designer.dataExtractAct('op', '>')">&gt;</button>
+            <button id="bdg-step2-data-extract-lt" class="btn btn-default bdg-operator" onclick="_bd.designer.dataExtractAct('op', '<')">&lt;</button>
+            <button id="bdg-step2-data-extract-and" class="btn btn-default bdg-operator" onclick="_bd.designer.dataExtractAct('op', '>=')">&gt;=</button>
+            <button id="bdg-step2-data-extract-or" class="btn btn-default bdg-operator" onclick="_bd.designer.dataExtractAct('op', '<=')">&lt;=</button>
+            <button id="bdg-step2-data-extract-e" class="btn btn-default bdg-operator" onclick="_bd.designer.dataExtractAct('op', '=')">=</button>
+            <button id="bdg-step2-data-extract-ne" class="btn btn-default bdg-operator" onclick="_bd.designer.dataExtractAct('op', '!=')">!=</button>
+            <button id="bdg-step2-data-extract-like" class="btn btn-default bdg-operator" onclick="_bd.designer.dataExtractAct('op', 'like')">like</button>
+            <button id="bdg-step2-data-extract-in" class="btn btn-default bdg-operator" onclick="_bd.designer.dataExtractAct('op', 'in')">in</button>
+            <label class="bdg-waring-msg" id="bdg-step2-data-extract-msg"></label>
+          </div>
+        </nav>
+        <nav class="navbar navbar-default">
+          <div class="navbar-form navbar-left">
+            <label>輸入器：</label>
+            <input id="bdg-step2-data-extract-input" type="text" class="form-control" placeholder="請輸入運算元內容，in的右運算元內容請以','隔開">
+            <button id="bdg-step2-data-extract-input-btn" class="btn btn-default" onclick="_bd.designer.dataExtractAct('input')">填入運算元</button>
+          </div>
+        </nav>
+        <nav class="navbar navbar-default">
+          <div class="navbar-form navbar-left">
+            <textarea id="bdg-step2-data-extract-rule" class="form-control" placeholder="單一規則說明：單一規則之各條件以AND串聯，完成後，按確定可置入規則清單。" rows="2" disabled></textarea>
+            <button id="bdg-step2-data-extract-reset-rule" class="btn btn-default" onclick="_bd.designer.dataExtractAct('resetRule')">清除</button>
+            <button id="bdg-step2-data-extract-add-rule" class="btn btn-default" onclick="_bd.designer.dataExtractAct('addRule')">確定</button>
+          </div>
+        </nav>
+        <div id="bdg-step2-data-extract-rule-list">
+          <div is="jqgrid" id="bdg-step2-data-extract-rule-grid" gridview="true" headervisible="false" heading="已設定規則(規則間以OR串聯)" stripe="false" autofit="true" roweditor="true" checkbox="false" page="false">
+            <div is="jqcol" name="rule" label="已設定規則(規則間以OR串聯)" sortable="false"></div>
+            <div is="jqcol" name="remove" type="button" label="移除" sortable="false" width="20" onclick="_bd.designer.dataExtractAct(this)"></div>
+            <!--<div is="jqcol" name="logic" type="select" label="串接邏輯" width="20%" editable="true" sortable="false" value="a:AND;o:OR"></div>-->
+          </div>
+        </div>
+      </div>
+
+      <!-- Save Info -->
+      <div id="bdg-save-info-dialog" title="儲存資訊項" style="display:none;">
+        <nav class="navbar navbar-toolbar" role="navigation">
+          <div class="container-fluid">
+            <form class="navbar-form navbar-left" role="form">
+              <div class="row">
+                <label class="control-label" for="bdg-save-info-chart-title">圖型標題：<sup>*</sup></label>
+                <input id="bdg-save-info-chart-title" type="text" class="form-control" style="width:455px;" placeholder="請輸入標題名稱">
+              </div>
+              <div class="row">
+                <label>領域：</label>
+                <button id="bdg-save-info-domain" type="button" class="btn btn-default" ng-model="domainOpts.selected" data-html="1" ng-options="opt.value as opt.label for opt in domainOpts.opts" bs-select>
+                  Action <span class="caret"></span>
+                </button>
+                <label>關鍵字：</label>
+                <button id="bdg-save-info-keyword" type="button" class="btn btn-default" ng-model="keywordOpts.selected" data-html="1" ng-options="opt.value as opt.label for opt in keywordOpts.opts" bs-select>
+                  Action <span class="caret"></span>
+                </button>
+              </div>
+              <div class="row">
+                <!--<button id="bdg-save-info" class="btn btn-default" onclick="_bd.reface.saveInfo('true')">儲存</button>-->
+                <!--<button id="bdg-save-info-as" class="btn btn-default" onclick="_bd.reface.saveInfoAs()">另存</button>-->
+                <label>訊息：</label>
+                <label id="bdg-save-info-msg" style="color:red;"></label>
+              </div>
+            </form>
+          </div>
+        </nav>
+      </div>
+
+      <!-- Data Order -->
+      <div id="bdg-data-order-dialog" title="設定排序資料的欄位順序" style="display:none;">
+        <div id="bdg-data-order-list">
+          <div is="jqgrid" id="bdg-data-order-grid" onrow="_bd.designer.dataOrderAct('col')" gridview="true" heading="欄位選擇器" headervisible="false" filtertoolbar="true" stripe="false" autofit="true" checkbox="false" page="false">
+            <div is="jqcol" name="table" label="表格"></div>
+            <div is="jqcol" name="colId" label="欄位ID"></div>
+            <div is="jqcol" name="colName" label="欄位名稱"></div>
+            <div is="jqcol" name="axis" label="軸線"></div>
+            <div is="jqcol" name="dataType" label="資料型態" hidden="true"></div>
+            <div is="jqcol" name="dataSize" label="資料長度" hidden="true"></div>
+            <div is="jqcol" name="baseUnit" label="單位" hidden="true"></div>
+            <div is="jqcol" name="baseFormat" label="格式" hidden="true"></div>
+          </div>
+        </div>
+        <nav class="navbar navbar-toolbar" role="navigation">
+          <div class="container-fluid">
+            <div class="collapse navbar-collapse">
+              <form class="navbar-form" role="search">
+                <div class="form-group">
+                  <div class="form-group">
+                    <textarea id="bdg-data-order-rule" class="bdg-formula-zone" placeholder="單一欄位排序設定，完成後，按確定可置入排序欄位清單。" rows="1" disabled></textarea>
+                  </div>
+                  <button id="bdg-data-order-desc" class="btn btn-default" onclick="_bd.designer.dataOrderAct('desc')">DESC</button>
+                  <button id="bdg-data-order-reset-rule" class="btn btn-default" onclick="_bd.designer.dataOrderAct('resetRule')">清除</button>
+                  <button id="bdg-data-order-add-rule" class="btn btn-default" onclick="_bd.designer.dataOrderAct('addRule')">確定</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        <div id="bdg-data-order-rule-list">
+          <div is="jqgrid" id="bdg-data-order-rule-grid" gridview="true" headervisible="false" heading="已設定排序欄位(由上而下加入排序欄位，可拖拉資料調整順序)" stripe="false" autofit="true" checkbox="false" page="false">
+            <div is="jqcol" name="rule" label="已設定排序欄位(由上而下加入排序欄位，可拖拉資料調整順序)" sortable="false"></div>
+            <div is="jqcol" name="remove" type="button" label="移除" sortable="false" width="20" onclick="_bd.designer.dataOrderAct(this)"></div>
+            <div is="jqcol" name="colId" label="欄位ID" sortable="true" hidden="true"></div>
+            <div is="jqcol" name="colName" label="欄位名稱" sortable="false" hidden="true"></div>
+            <div is="jqcol" name="axis" label="軸線" sortable="false" hidden="true"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Distribution Chart -->
+      <div id="bdg-pdf-chart-dialog" title="分佈圖型" style="display:none;">
+        <div id="bdg-pdf-chart-view">
+          <canvas id="bdg-pdf-chart-view-canvas" width="700" height="500"></canvas>
+        </div>
+      </div>
+
+      <!-- Advanced Chart Preview -->
+      <div id="bdg-adv-chart-prev-dialog" title="圖型預覽" style="display:none;">
+        <!--<nav class="navbar navbar-default">-->
+          <!--<div class="navbar-form navbar-left">-->
+            <!--<button id="bdg-tct-bar" class="btn btn-default" onclick="_bd.drawer.tcTransfer('#bdg-adv-chart-view-canvas', 'Bar')">長條圖</button>-->
+          <!--</div>-->
+        <!--</nav>-->
+        <div id="bdg-adv-chart-view">
+          <canvas id="bdg-adv-chart-view-canvas" width="700" height="500"></canvas>
+        </div>
+      </div>
+
+      <!-- Advanced Query Form -->
+      <div id="bdg-adv-query-dialog" title="進階查詢：唯一值組合欄位資料集設定" style="display:none;">
+        <div class="container-fluid">
+          <ul class="nav nav-tabs" role="tablist">
+            <li class="active"><a href="#bdg-adv-query-col" data-toggle="tab">條件設定</a></li>
+            <li ><a href="#bdg-adv-query-rs" data-toggle="tab" onclick="setTimeout(function () {_bd.aq.aqResultSet('LC')}, 0);">欄位資料查詢</a></li>
+            <li ><a href="#bdg-adv-query-rs-unique" data-toggle="tab" onclick="setTimeout(function () {_bd.aq.aqResultSet('UC')}, 0);">唯一值組合查詢</a></li>
+          </ul>
+          <div class="tab-content">
+            <div id="bdg-adv-query-col" class="tab-pane active">
+              <nav class="navbar navbar-toolbar" role="navigation">
+                <div class="container-fluid">
+                  <div class="btn-toolbar" role="toolbar">
+                    <button id="bdg-adv-query-sort" class="btn btn-default" onclick="_bd.aq.aqDataOrder()">資料排序</button>
+                  </div>
+                </div>
+              </nav>
+              <div id="bdg-adv-query-form" role="form"></div>
+            </div>
+            <div id="bdg-adv-query-rs" class="tab-pane"></div>
+            <div id="bdg-adv-query-rs-unique" class="tab-pane"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Assistance -->
+      <div id="bdg-aq-assist-dialog" title="輔助輸入清單" style="display:none;">
+        <div class="table-responsive">
+          <table id="bdg-aq-assist-table" class="table table-hover table-bordered table-condensed"></table>
+        </div>
+      </div>
+
+      <!-- Common Data -->
+      <div id="bdg-common-data-dialog" title="資料清單" style="display:none;">
+        <img src="res/images/loading.gif" style="padding-left:50px;" /><br>
+        <h4>PLEASE WAIT....</h4>
+      </div>
+
+      <!-- Advanced Query Data Order -->
+      <div id="bdg-aq-data-order-dialog" title="進階查詢：欄位資料查詢的排序設定" style="display:none;">
+        <div id="bdg-aq-data-order-list">
+          <div is="jqgrid" id="bdg-aq-data-order-grid" onrow="_bd.aq.aqDataOrderAct('col')" gridview="true" heading="欄位選擇器" headervisible="false" filtertoolbar="true" stripe="false" autofit="true" checkbox="false" page="false">
+            <div is="jqcol" name="table" label="表格"></div>
+            <div is="jqcol" name="colId" label="欄位ID"></div>
+            <div is="jqcol" name="colName" label="欄位名稱"></div>
+          </div>
+        </div>
+        <nav class="navbar navbar-toolbar" role="navigation">
+          <div class="container-fluid">
+            <div class="collapse navbar-collapse">
+              <form class="navbar-form" role="search">
+                <div class="form-group">
+                  <div class="form-group">
+                    <textarea id="bdg-aq-data-order-rule" class="bdg-formula-zone" placeholder="單一欄位排序設定，完成後，按確定可置入排序欄位清單。" rows="1" disabled></textarea>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <button id="bdg-aq-data-order-desc" class="btn btn-default" onclick="_bd.aq.aqDataOrderAct('desc')">DESC</button>
+                  <button id="bdg-aq-data-order-reset-rule" class="btn btn-default" onclick="_bd.aq.aqDataOrderAct('resetRule')">清除</button>
+                  <button id="bdg-aq-data-order-add-rule" class="btn btn-default" onclick="_bd.aq.aqDataOrderAct('addRule')">確定</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        <div id="bdg-aq-data-order-rule-list">
+          <div is="jqgrid" id="bdg-aq-data-order-rule-grid" gridview="true" headervisible="false" heading="已設定排序欄位(由上而下加入排序欄位，可拖拉資料調整順序)" stripe="false" autofit="true" checkbox="false" page="false">
+            <div is="jqcol" name="rule" label="已設定排序欄位(由上而下加入排序欄位，可拖拉資料調整順序)" sortable="false"></div>
+            <div is="jqcol" name="remove" type="button" label="移除" sortable="false" width="20" onclick="_bd.aq.aqDataOrderAct(this)"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </body>
+</html>

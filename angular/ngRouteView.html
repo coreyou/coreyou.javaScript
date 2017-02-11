@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html ng-app="appName_scope">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>ngRoute, ngView</title>
+    <!-- Bootstrap core CSS -->
+    <link href="../lib/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <!-- Bootstrap theme -->
+    <link href="../lib/bootstrap/3.3.1/css/bootstrap-theme.min.css" rel="stylesheet">
+    <!-- angular -->
+    <script src="../lib/angular/angular.js"></script>
+    <script src="../lib/angular/angular-route.js"></script>
+    <script src="src/js/controller_scope.js"></script><!-- 綁angular-route.js -->
+</head>
+<body>
+    <div class="well span4" style="margin-top:20px;" ng-controller="OnePieceCtrl">
+        <h2>Members</h2>
+        <div>
+            <label class="control-label" for="name">Name:</label>
+            <input class="form-group" type="text" id="name" placeholder="Name" ng-model="pName">
+            <br />
+            <label class="control-label" for="reward">Reward:</label>
+            <input class="form-group" type="number" id="reward" placeholder="Reward" ng-model="pReward">
+
+            <br />
+            <button class="btn btn-default" ng-click="add()">Add</button>
+        </div>
+        <hr />
+        <div ng-view></div><!-- $routeProvider.when裡面的templateUrl屬性設定的會在這裡被引入 -->
+        <hr />
+    </div>
+</body>
+</html>

@@ -1,0 +1,128 @@
+<div class="container-fluid" ng-controller="tableMgrCtrl">
+  <div class="panel panel-info">
+    <div class="panel-heading">
+      <h3 class="panel-title">來源資料表</h3>
+    </div>
+    <div class="panel-body">
+      <div class="btn-toolbar" role="toolbar">
+        <div class="btn-group btn-group-sm">
+          <button type="button" class="btn btn-default" ng-model="datasource" data-html="1"
+                  ng-options="ds.datasourceId for ds in dsList" data-placeholder="來源資料源" ng-change="chgDS()" bs-select>
+          </button>
+          <button type="button" class="btn btn-default" ng-model="schema" ng-change="chgSchema()" data-html="1"
+                  ng-options="schema for schema in schemaList" data-placeholder="Schema" bs-select>
+          </button>
+        </div>
+        <div class="btn-group btn-group-sm">
+          <button type="button" class="btn btn-primary" ng-click="import()"
+                  ng-class="{'disabled':tableGrid.selectedItems.length ==0}">
+            <span class="glyphicon glyphicon-import"></span> 匯入
+          </button>
+        </div>
+      </div>
+
+      <div ui-grid="tableGrid.gridOptions" class="grid srcTable" ui-grid-selection ui-grid-auto-resize
+           ui-grid-resize-columns></div>
+    </div>
+  </div>
+
+  <div class="panel panel-info">
+    <div class="panel-heading">
+      <h3 class="panel-title">資料表編輯</h3>
+    </div>
+    <div class="panel-body">
+      <div ui-grid="importGrid.gridOptions" class="grid importTable" ui-grid-selection ui-grid-auto-resize external-scopes="this"
+           ui-grid-resize-columns></div>
+    </div>
+  </div>
+
+  <script type="text/ng-template" id="importTbModal">
+    <div class="modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header" ng-show="title">
+            <button type="button" class="close" ng-click="$hide()">&times;</button>
+            <h4 class="modal-title" ng-bind="title"></h4>
+          </div>
+
+          <div class="modal-body">
+            <form name="importTbFrom" class="form-horizontal" novalidate>
+              <fieldset>
+                <div class="form-group">
+                  <label class="col-lg-2 control-label">領域</label>
+
+                  <div class="col-lg-10">
+                    <ui-select ng-model="domainList.selected">
+                      <ui-select-match placeholder="選擇領域">{{$select.selected.domain}}</ui-select-match>
+                      <ui-select-choices repeat="domain in domainList | propsFilter: {domain: $select.search}">
+                        <div ng-bind-html="domain.domain | highlight: $select.search"></div>
+                        <small>{{domain.description}}</small>
+                      </ui-select-choices>
+                    </ui-select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="col-lg-2 control-label">系統</label>
+
+                  <div class="col-lg-10">
+                    <ui-select ng-model="systemList.selected">
+                      <ui-select-match placeholder="選擇系統別">{{$select.selected.name}}</ui-select-match>
+                      <ui-select-choices group-by="systemGroup"
+                                         repeat="system in systemList | propsFilter: {name: $select.search}">
+                        <div ng-bind-html="system.name | highlight: $select.search"></div>
+                        <small>{{system.desc}}</small>
+                      </ui-select-choices>
+                    </ui-select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="col-lg-2 control-label">資料表</label>
+
+                  <div class="col-lg-10">
+                    <input type="text" name="srcTable" class="form-control" ng-model="importTable.id.srcTable" disabled
+                           required>
+                  </div>
+                </div>
+
+                <div class="form-group"
+                     ng-class="{ 'has-error': importTbFrom.alias.$invalid && !importTbFrom.alias.$pristine }">
+                  <label class="col-lg-2 control-label">別名</label>
+
+                  <div class="col-lg-10">
+                    <input type="text" name="alias" class="form-control" ng-model="importTable.alias"
+                           placeholder="表格別名" required>
+                    <span ng-show="importTbFrom.alias.$invalid && !importTbFrom.alias.$pristine" class="help-block">別名是必要的 !!</span>
+                  </div>
+                </div>
+
+                <div class="form-group"
+                     ng-class="{ 'has-error': importTbFrom.owner.$invalid && !importTbFrom.owner.$pristine }">
+                  <label class="col-lg-2 control-label">Owner</label>
+
+                  <div class="col-lg-10">
+                    <input type="text" name="owner" class="form-control" ng-model="importTable.owner"
+                           placeholder="Owner" required>
+                    <span ng-show="importTbFrom.owner.$invalid && !importTbFrom.owner.$pristine" class="help-block">Owner is required.</span>
+                  </div>
+                </div>
+              </fieldset>
+            </form>
+          </div>
+
+          <div class="modal-footer">
+            <div class="form-group">
+              <div class="col-lg-10 col-lg-offset-2">
+                <button type="button" class="btn btn-primary btn-sm" ng-class="{'disabled':importTbFrom.$invalid}"
+                        ng-click="update()">
+                  儲存
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </script>
+</div>

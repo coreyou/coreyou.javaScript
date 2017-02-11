@@ -1,0 +1,47 @@
+.grid.tableColumn {
+    height: 42vh;
+}
+
+.grid.condition {
+    height: 42vh;
+}
+
+.grid.relation {
+    height: 30vh;
+}
+
+.source {
+    padding-right: 6px;
+}
+
+.target {
+    padding-right: 6px;
+}
+
+.grid.srcTable {
+     height: 30vh;
+}
+
+.grid.importTable {
+    height: 42vh;
+}
+
+.well {
+    margin-bottom: 0px;
+}
+
+.ui-grid-cell {
+    line-height: 26px;
+}
+
+.nav-tabs-google {
+    margin-bottom: 8px;
+}
+
+.btn-toolbar {
+    margin-bottom: 4px;
+}
+
+.input-group {
+    margin-bottom: 4px;
+}

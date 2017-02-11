@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html ng-app="appName">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>ng-submit</title>
+    <!-- self add angular validation CSS -->
+    <link href="src/css/validation.css" type="text/css" rel="stylesheet" /><!-- 設定檢核成功和不成功的外觀: 輸入欄位的外框顏色 -->
+    <!-- Bootstrap core CSS -->
+    <link href="../lib/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <!-- Bootstrap theme -->
+    <link href="../lib/bootstrap/3.3.1/css/bootstrap-theme.min.css" rel="stylesheet">
+    <!-- angular -->
+    <script src="../lib/angular/angular.js"></script>
+    <script src="src/js/controller.js"></script><!-- 連結到directives.js -->
+    <script src="src/js/directives.js"></script>
+</head>
+<body>
+    <div class="well container-fluid" ng-controller="PersonCtrl as person"><!-- controllerName as controllerAlias -->
+        <div class="row">
+            <div class="col-lg-4 " ng-repeat="member in person.members" ng-hide="member.isDeprecatedMember">
+                <div class="thumbnail">
+                    <h1>{{ member.name }}</h1>
+                    <blockquote ng-repeat="article in member.articles">
+                        <b>stars: {{ article.stars }}</b>
+                        <p>{{ article.body }}</p>
+                        <cite>--{{ article.author }}</cite>
+                    </blockquote>
+                    <!-- form --><!-- ng-submit: do after submit the form --><!-- articleForm.$valid要是true才會submit，若沒有加就算沒過validation也會submit -->
+                    <form name="articleForm" ng-controller="ArticleController as articleCtrl" ng-submit="articleForm.$valid && articleCtrl.addArticle(member)">
+                        <!-- preview -->
+                        <blockquote ng-show="articleCtrl.article"><!-- article is defined in the ArticleController -->
+                            <strong>{{articleCtrl.article.stars}} Stars</strong><br />
+                            {{articleCtrl.article.body}}
+                            <cite class="clearfix">—{{articleCtrl.article.author}} on {{articleCtrl.article.createdDate | date}}</cite>
+                        </blockquote>
+                        <!-- end of preview -->
+                        <h3>Submit an Article</h3>
+                        <fieldset class="form-group">
+                            <!-- ng-options: select as label for value in array -->
+                            <!-- required: 必輸欄位 -->
+                            <select ng-model="articleCtrl.article.stars" class="form-control"
+                                    ng-options="star.score as star.level for star in articleCtrl.stars" title="Stars" required >
+                                <option value="">Rate the Article</option>
+                            </select>
+                        </fieldset>
+                        <fieldset class="form-group">
+                            <textarea ng-model="articleCtrl.article.body" class="form-control" placeholder="Write a short review of the article..." title="Article" required ></textarea>
+                        </fieldset>
+                        <fieldset class="form-group">
+                            <!-- type: email會去檢核是否輸入的值為email形式，如果在外層 form 標籤內加入 novalidate 屬性，就不會檢核此email type-->
+                            <input ng-model="articleCtrl.article.author" type="email" class="form-control" placeholder="abc@yahoo.com.tw" title="Email" required />
+                        </fieldset>
+                        <fieldset class="form-group">
+                            <input type="submit" class="btn btn-primary pull-right" value="Submit Article" />
+                        </fieldset>
+                    </form>
+                    <!-- end of form -->
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

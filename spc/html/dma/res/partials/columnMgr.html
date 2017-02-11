@@ -1,0 +1,90 @@
+<div class="container-fluid" ng-controller="columnMgrCtrl">
+  <div class="panel panel-info">
+    <div class="panel-heading">
+      <h3 class="panel-title">{{tableGrid.selected.id.srcTable}} 資料欄編輯</h3>
+    </div>
+    <div class="panel-body">
+      <div class="btn-toolbar" role="toolbar">
+        <div class="btn-group btn-group-sm">
+          <button type="button" class="btn btn-default" ng-model="datasourceId" data-html="1"
+                  ng-options="ds.datasourceId as ds.datasourceId for ds in dsList" data-placeholder="資料源"
+                  ng-change="chgDS()" bs-select>
+          </button>
+          <button type="button" class="btn btn-default" ng-model="schema" ng-change="chgSchema()" data-html="1"
+                  ng-class="{'disabled':!datasourceId}"
+                  ng-options="schema for schema in schemaList" data-placeholder="Schema"
+                  bs-select>
+          </button>
+          <button type="button" class="btn btn-default btn-sm" ng-click="selectTable()"
+                  ng-class="{'disabled':!schema}">
+            <span class="glyphicon glyphicon-hand-up"></span> 挑選資料表
+          </button>
+        </div>
+
+        <div class="btn-group btn-group-sm">
+          <button type="button" class="btn btn-primary btn-sm" ng-click="save()"
+                  ng-class="{'disabled':!isEdit}">
+            <span class="glyphicon glyphicon-floppy-save"></span> 儲存
+          </button>
+        </div>
+      </div>
+
+      <div style="height: 50vh" ui-grid="columnGrid.gridOptions" class="grid"
+           external-scopes="this" ui-grid-edit ui-grid-row-edit ui-grid-cellnav ui-grid-resize-columns
+           ui-grid-auto-resize></div>
+    </div>
+  </div>
+
+  <div class="panel panel-info">
+    <div class="panel-heading">
+      <h3 class="panel-title">{{tableGrid.selected.id.srcTable}} 預覽資料 <span class="small bottom">(Only show Top 30)</span></h3>
+    </div>
+    <div class="panel-body">
+      <div style="height: 22vh" ui-grid="dataGrid.gridOptions" ui-grid-auto-resize ui-grid-resize-columns class="grid"></div>
+    </div>
+  </div>
+</div>
+
+<script type="text/ng-template" id="selectTbModal">
+  <div class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header" ng-show="title">
+          <button type="button" class="close" ng-click="$hide()">&times;</button>
+          <h4 class="modal-title" ng-bind="title"></h4>
+        </div>
+
+        <div class="modal-body">
+          <div style="height: 400px" ui-grid="tableGrid.gridOptions" class="grid"
+               ui-grid-selection external-scopes="this"
+               ui-grid-resize-columns ui-grid-auto-resize></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</script>
+
+<script type="text/ng-template" id="selectAssistQueryModal">
+  <div class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header" ng-show="title">
+          <button type="button" class="close" ng-click="$hide()">&times;</button>
+          <h4 class="modal-title" ng-bind="title"></h4>
+        </div>
+
+        <div class="modal-body">
+          <div class="panel panel-info">
+            <div class="panel-heading">
+              <h3 class="panel-title">參考資料表</h3>
+            </div>
+            <div class="panel-body">
+              <div ui-grid="assistGrid.gridOptions" class="grid" ui-grid-selection ui-grid-auto-resize
+                   external-scopes="this" ui-grid-resize-columns></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</script>

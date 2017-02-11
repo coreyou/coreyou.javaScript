@@ -1,0 +1,289 @@
+<div class="container-fluid" ng-controller="assistQueryMgrCtrl">
+  <div class="container-fluid">
+    <div class="btn-toolbar" role="toolbar">
+      <div class="btn-group btn-group-sm">
+        <button type="button" class="btn btn-primary" ng-click="showAdd()">
+          <span class="glyphicon glyphicon-plus"></span> 新增
+        </button>
+      </div>
+    </div>
+    <div ui-grid="assistGrid.gridOptions" style="height: 50vh" class="grid" ui-grid-selection ui-grid-auto-resize
+         external-scopes="this"
+         ui-grid-resize-columns></div>
+  </div>
+</div>
+
+<script type="text/ng-template" id="assistEditModal">
+  <div class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" style="width: 1000px">
+      <div class="modal-content">
+        <form name="form" class="form-horizontal" novalidate>
+
+          <div class="modal-header" ng-show="title">
+            <button type="button" class="close" ng-click="$hide()">&times;</button>
+            <h4 class="modal-title" ng-bind="title"></h4>
+          </div>
+
+          <div class="modal-body">
+            <tabset type="tabs nav-tabs-google">
+              <!-- 基本設定 -->
+              <tab heading="基本設定">
+                <fieldset ng-form="form1">
+                  <div class="form-group"
+                       ng-class="{ 'has-error': form1.assistId.$invalid && !form1.assistId.$pristine }">
+                    <label class="col-lg-2 control-label">輔助查詢代碼</label>
+
+                    <div class="col-lg-10">
+                      <input type="text" name="assistId" class="form-control" ng-model="basicSetting.assistId"
+                             ui-validate="{duplicateId:'checkAssistId($value)'}" ng-disabled="!isAdd"
+                             placeholder="輔助查詢代碼" required>
+                      <span ng-show="form1.assistId.$error.required && !form1.assistId.$pristine"
+                            class="help-block">assistId is required.</span>
+                      <span ng-show="form1.assistId.$error.duplicateId && !form1.assistId.$pristine"
+                            class="help-block">此輔助查詢代碼已存在 !!</span>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="col-lg-2 control-label">資料來源類型</label>
+
+                    <div class="col-lg-10">
+                      <button type="button" name="sourceType" ng-model="basicSetting.sourceType"
+                              class="btn btn-default btn-sm"
+                              data-html="1" ng-options="type.value as type.label for type in sourceTypeList"
+                              ng-change="chgSourceType();" data-placeholder="資料來源" bs-select required>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="col-lg-2 control-label">備註</label>
+
+                    <div class="col-lg-10">
+                      <textarea name="remark" class="form-control" ng-model="basicSetting.remark" rows="4"
+                                placeholder="備註說明"></textarea>
+                    </div>
+                  </div>
+                </fieldset>
+              </tab>
+
+              <!-- 欄位設定 -->
+              <tab heading="欄位設定" disabled="!basicSetting[basicSetting.sourceType] || !basicSetting.assistId">
+                <!-- Table -->
+                <div class="input-group input-group-sm" ng-show="basicSetting.sourceType === 'TABLE'">
+                  <input type="text" class="form-control" placeholder="選擇資料表"
+                         value="{{basicSetting[basicSetting.sourceType].srcSchema ? basicSetting[basicSetting.sourceType].datasourceId+'.'+basicSetting[basicSetting.sourceType].srcSchema+'.'+basicSetting[basicSetting.sourceType].srcTable:''}}"
+                         disabled>
+                  <span class="input-group-btn">
+                    <button class="btn btn-default" type="button" ng-click="selectTableGrid.select()">選擇</button>
+                  </span>
+                </div>
+
+                <!-- SQL -->
+                <fieldset ng-show="basicSetting.sourceType === 'SQL'" ng-form="form2">
+                  <div class="btn-toolbar col-lg-12" role="toolbar">
+                    <div class="btn-group btn-group-sm">
+                      <button type="button" class="btn btn-default"
+                              ng-model="basicSetting[basicSetting.sourceType].datasourceId"
+                              data-html="1" ng-options="ds.datasourceId as ds.datasourceId for ds in datasources"
+                              data-placeholder="選擇資料源" ng-change="chgDS()" bs-select>
+                      </button>
+                      <button type="button" class="btn btn-default btn-sm" ng-click="executeSql()"
+                              ng-class="{'disabled':!basicSetting[basicSetting.sourceType].datasourceId}">執行 SQL
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="form-group" ng-class="{ 'has-error': form2.sql.$invalid && !form2.sql.$pristine }">
+                    <div class="col-lg-12">
+                      <textarea name="sql" class="form-control" ng-model="basicSetting.sql" rows="4"
+                                placeholder="請輸入 SQL 查詢句" required>
+                      </textarea>
+                      <span ng-show="form2.sql.$error.hasSQL && !form2.sql.$pristine"
+                            class="help-block">SQL is required.</span>
+                    </div>
+                  </div>
+                </fieldset>
+
+                <!-- 共用表格 -->
+                <div class="input-group input-group-sm" ng-show="basicSetting.sourceType === 'PUBLIC_TABLE'">
+                  <input type="text" class="form-control" placeholder="選擇公用表格" value="{{basicSetting.publicTable}}"
+                         disabled>
+                  <span class="input-group-btn">
+                    <button class="btn btn-default" type="button" ng-click="selectPublicTableGrid.select()">選擇</button>
+                  </span>
+                </div>
+
+                <div style="height: 400px" ui-grid="columnGrid.gridOptions" class="grid"
+                     external-scopes="this" ui-grid-edit ui-grid-cellnav ui-grid-auto-resize></div>
+              </tab>
+            </tabset>
+          </div>
+
+          <div class="modal-footer">
+            <div class="col-lg-10 col-lg-offset-2">
+              <button type="button" class="btn btn-primary btn-sm"
+                      ng-class="{'disabled':(form.form1.$invalid || columnGrid.list.length === 0) || (basicSetting.sourceType === 'SQL' && form.form2.$invalid)}"
+                      ng-click="save()">
+                {{isAdd ? '新增' : '儲存'}}
+              </button>
+            </div>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</script>
+
+<script type="text/ng-template" id="selectTableModal">
+  <div class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" ng-click="$hide()">&times;</button>
+          <h4 class="modal-title">資料表挑選清單</h4>
+        </div>
+
+        <div class="modal-body">
+          <div class="btn-toolbar" role="toolbar">
+            <div class="btn-group btn-group-sm">
+              <button type="button" class="btn btn-default"
+                      ng-model="basicSetting[basicSetting.sourceType].datasourceId"
+                      data-html="1" ng-options="ds.datasourceId as ds.datasourceId for ds in datasources"
+                      data-placeholder="選擇資料源" ng-change="chgDS()" bs-select>
+              </button>
+              <button type="button" class="btn btn-default"
+                      ng-model="basicSetting[basicSetting.sourceType].srcSchema"
+                      ng-change="selectTableGrid.chgSchema()" data-html="1"
+                      ng-options="schema for schema in basicSetting[basicSetting.sourceType].schemas"
+                      ng-class="{'disabled':!basicSetting[basicSetting.sourceType].datasourceId}"
+                      data-placeholder="Schema" bs-select>
+              </button>
+            </div>
+          </div>
+
+          <div style="height: 300px" ui-grid="selectTableGrid.gridOptions" class="grid"
+               external-scopes="this" ui-grid-selection ui-grid-auto-resize></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</script>
+
+<script type="text/ng-template" id="selectPublicTableModal">
+  <div class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" ng-click="$hide()">&times;</button>
+          <h4 class="modal-title">共用表格挑選清單</h4>
+        </div>
+
+        <div class="modal-body">
+          <div style="height: 300px" ui-grid="selectPublicTableGrid.gridOptions" class="grid" external-scopes="this"
+               ui-grid-selection ui-grid-auto-resize></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</script>
+
+<script type="text/ng-template" id="selectRefModal">
+  <div class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" style="width: 90%">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" ng-click="$hide()">&times;</button>
+          <h4 class="modal-title">設定參考欄位</h4>
+        </div>
+
+        <div class="modal-body">
+          <div class="btn-toolbar" role="toolbar" style="margin-bottom: 6px">
+            <div class="btn-group btn-group-sm">
+              <button type="button" class="btn btn-default"
+                      ng-model="basicSetting[basicSetting.sourceType].refSourceType" data-html="1"
+                      ng-options="type.value as type.label for type in refSourceTypeList" data-placeholder="資料來源"
+                      bs-select>
+              </button>
+              <button type="button" class="btn btn-default"
+                      ng-model="basicSetting[basicSetting.sourceType].datasourceId"
+                      data-html="1" ng-options="ds.datasourceId as ds.datasourceId for ds in datasources"
+                      data-placeholder="選擇資料源"
+                      ng-if="basicSetting[basicSetting.sourceType].refSourceType === 'TABLE' && basicSetting.sourceType === 'PUBLIC_TABLE'"
+                      ng-change="chgDS()"
+                      bs-select>
+              </button>
+              <button type="button" class="btn btn-default" ng-model="basicSetting[basicSetting.sourceType].refSchema"
+                      ng-if="basicSetting[basicSetting.sourceType].refSourceType === 'TABLE'"
+                      ng-change="chgRefSchema()" data-html="1"
+                      ng-class="{'disabled':!basicSetting[basicSetting.sourceType].datasourceId}"
+                      ng-options="schema for schema in basicSetting[basicSetting.sourceType].schemas"
+                      data-placeholder="Schema" bs-select>
+              </button>
+            </div>
+          </div>
+
+          <div class="panel panel-info" ng-show="basicSetting[basicSetting.sourceType].refSourceType">
+            <div class="panel-heading">
+              <h3 class="panel-title">關聯資料表</h3>
+            </div>
+            <div class="panel-body">
+              <div style="height: 200px" ng-if="basicSetting[basicSetting.sourceType].refSourceType === 'TABLE'"
+                   ui-grid="refTableGrid.gridOptions" class="grid" external-scopes="this" ui-grid-selection
+                   ui-grid-auto-resize></div>
+              <div style="height: 200px"
+                   ng-if="basicSetting[basicSetting.sourceType].refSourceType === 'PUBLIC_TABLE'"
+                   ui-grid="refPublicTableGrid.gridOptions" class="grid" external-scopes="this" ui-grid-selection
+                   ui-grid-auto-resize></div>
+            </div>
+          </div>
+
+          <div class="row" ng-show="basicSetting[basicSetting.sourceType].refSourceType">
+            <div class="col-md-9">
+              <div class="panel panel-info">
+                <div class="panel-heading">
+                  <h3 class="panel-title">關聯欄位</h3>
+                </div>
+                <div class="panel-body">
+                  <div style="height: 300px" ng-if="basicSetting[basicSetting.sourceType].refSourceType === 'TABLE'"
+                       ui-grid="refColumnGrid.gridOptions" class="grid" external-scopes="this"
+                       ui-grid-selection ui-grid-auto-resize></div>
+                  <div style="height: 300px"
+                       ng-if="basicSetting[basicSetting.sourceType].refSourceType === 'PUBLIC_TABLE'"
+                       ui-grid="refPublicColumnGrid.gridOptions" class="grid" external-scopes="this" ui-grid-selection
+                       ui-grid-auto-resize></div>
+                </div>
+              </div>
+
+            </div>
+            <div class="col-md-3">
+              <div class="panel panel-info">
+                <div class="panel-heading">
+                  <h3 class="panel-title">參考欄位</h3>
+                </div>
+                <div class="panel-body">
+                  <div style="height: 300px"
+                       ui-grid="refDisplayColumnGrid.gridOptions" class="grid" external-scopes="this"
+                       ui-grid-selection ui-grid-auto-resize></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <div class="col-lg-10 col-lg-offset-2">
+            <button type="button" class="btn btn-danger btn-sm"
+                    ng-click="cancelRefColumn()">取消參考
+            </button>
+            <button type="button" class="btn btn-primary btn-sm"
+                    ng-class="{'disabled': basicSetting[basicSetting.sourceType].refDisplayColumns.length === 0}"
+                    ng-click="confirmRefColumn()">確定
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</script>
