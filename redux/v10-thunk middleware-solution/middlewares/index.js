@@ -13,7 +13,6 @@ const logger = function(store){
 }
 
 //second middleware
-// 這裡第二個middleware拿來測試sum拋出error的情況
 const crashReporter = function(store){
     return function(next){
         return function(action){
@@ -25,7 +24,7 @@ const crashReporter = function(store){
                 console.error(err);
                 console.groupEnd('crashReporter');
             }
-            
+
         }
     }
 }
