@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bootstro Demo</title>
+    <script src="../lib/jquery/jquery-1.11.1.js"></script>
+    <script src="../lib/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="../lib/bootstro/bootstro.js"></script>
+    <script src="bootstro-welcome.js"></script>
+    <link href="../lib/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="../lib/bootstrap/3.3.7/css/bootstrap-theme.min.css" rel="stylesheet" media="screen">
+    <link href="../lib/bootstro/bootstro.css" rel="stylesheet" media="screen">
+</head>
+<body>
+    <div class="modal fade" id="welcomeModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="jumbotron">
+                        <h2>您正在開啟..</h2>
+                        <h1 id="welcomeModalTitle"></h1>
+                        <p><h4 id="welcomeModalContent">
+                        <ul>
+                            <li>更方便的搜尋</li>
+                            <li>更直覺的操作</li>
+                            <li>新功能：測試授權</li>
+                        </ul>
+                    </h4></p>
+                        <br />
+                        <p>
+                            <input type="checkbox" id="alwaysOpenCheckbox" checked> 開啟時<u>總是顯示</u>此歡迎畫面
+                        </p>
+                        <p>
+                            <button type="button" class="btn btn-danger btn-lg" id="welcomeHelpBtn"><i class="fa fa-question" aria-hidden="true"></i> <span>使用指引</span></button>
+                            <button type="button" class="btn btn-primary btn-lg" id="directStartBtn"><i class="fa fa-angle-right" aria-hidden="true"></i> <span>直接開始</span></button>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="page-header">
+            <h1>Buttons</h1>
+        </div>
+        <p>
+            <button type="button" class="btn btn-lg btn-default" id="bootstroStart">啟動Bootstro</button>
+            <button type="button" class="btn btn-lg btn-primary">Primary</button>
+            <button type="button" class="btn btn-lg btn-success">Success</button>
+            <button type="button" class="btn btn-lg btn-info bootstro" data-bootstro-title="步驟1" data-bootstro-content="測試內容" data-bootstro-width="400px" data-bootstro-step="0" data-bootstro-placement="bottom">Info</button>
+            <button type="button" class="btn btn-lg btn-warning">Warning</button>
+            <button type="button" class="btn btn-lg btn-danger bootstro" data-bootstro-title="步驟2" data-bootstro-content="測試內容2" data-bootstro-width="400px" data-bootstro-step="1" data-bootstro-placement="right">Danger</button>
+            <button type="button" class="btn btn-lg btn-link">Link</button>
+        </p>
+        <div class="page-header">
+            <h1>Tables</h1>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Username</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="bootstro" data-bootstro-title="步驟3" data-bootstro-content="測試內容3" data-bootstro-width="400px" data-bootstro-step="2" data-bootstro-placement="top">
+                        <td>1</td>
+                        <td>Mark</td>
+                        <td>Otto</td>
+                        <td>@mdo</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Jacob</td>
+                        <td>Thornton</td>
+                        <td>@fat</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Larry</td>
+                        <td>the Bird</td>
+                        <td>@twitter</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script>
+        $("#bootstroStart").click(function() {
+            console.log("bootstro start");
+            bootstro.start(".bootstro", {
+                onComplete: function (params) {
+                    alert("Reached end of introduction with total " + (params.idx + 1) + " slides");
+                },
+                onExit: function (params) {
+                    alert("Introduction stopped at slide #" + (params.idx + 1));
+                }
+            });
+        });
+    </script>
+</body>
+</html>
